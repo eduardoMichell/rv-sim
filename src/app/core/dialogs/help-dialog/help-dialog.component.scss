@@ -1,0 +1,40 @@
+@import '/src/assets/colors';
+
+
+section {
+    width: 400px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+mat-form-field {
+    margin-top: 30px;
+    width: 100%;
+}
+
+span {
+    font-weight: 500;
+    font-size: large;
+    padding: 5px;
+    background: $lapis-lazuli;
+    width: 100%;
+    text-align: center;
+}
+
+.buttons{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+button{
+    width: 150px;
+    height: 30px;
+    background: $outer-space;
+    border: 1px solid black;
+    color: $white;
+    border-radius: 5px;
+}

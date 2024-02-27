@@ -1,0 +1,74 @@
+@import '/src/assets/colors';
+
+.card {
+  background-color: $secondary;
+  max-height: 654px;
+  margin-left: 10px;
+  flex-basis: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  white-space: pre-wrap;
+  color: $letter;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  min-width: 300px;
+  font-size: 16px;
+}
+
+
+tbody::-webkit-scrollbar {
+  width: 8px;
+}
+
+tbody::-webkit-scrollbar-thumb {
+  background: linear-gradient(0deg, #3A3A3A, #3A3A3A);
+  border: 1px solid rgba(0, 0, 0, 1);
+  border-radius: 8px;
+}
+
+tbody::-webkit-scrollbar-track {
+  background-color: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 0;
+}
+
+th {
+  width: 30%;
+  font-size: 16px;
+  line-height: 32px;
+  font-weight: 500;
+  color: #CCCCCC;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  vertical-align: middle;
+}
+
+tbody {
+  overflow-y: auto;
+  display: block;
+  max-height: 600px;
+}
+
+tr {
+  display: table;
+  width: 100%;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+td {
+  width: 33%;
+  box-sizing: border-box;
+}
+
+hr {
+  margin: 0;
+  background: rgba(58, 58, 58, 1);
+  border: 1px solid rgba(58, 58, 58, 1);
+}
