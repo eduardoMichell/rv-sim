@@ -1,0 +1,19 @@
+node_modules
+
+# IDEs and editors
+/.idea
+
+# misc
+.angular
+.sass-cache
+connect.lock
+coverage
+libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+typings
+dist
+tmp
+out-tsc
+bazel-out

@@ -1,0 +1,11 @@
+<section>
+    <h2 class="card-title">Dump Memory To File</h2>
+        <span class="select-title">Dump Format</span>
+        <select [(ngModel)]="type">
+            <option *ngFor="let type of types" [ngValue]="type">{{type.description}}</option>
+        </select>
+    <div class="buttons">
+        <button (click)="dumpFile()" class="dump-button">Dump To File</button>
+        <button (click)="closeDialog()" class="cancel-button">Cancel</button>
+    </div>
+</section>
