@@ -12,10 +12,10 @@
       </thead>
     </table>
     <div class="tbody-container">
-      <table class="text-segment-table" *ngIf="canRun()">
+      <table class="text-segment-table table-scroll" *ngIf="canRun()">
         <tbody class="text-segment-body">
-          <ng-container *ngFor="let row of this.getTextSegment(); let last = last">
-            <tr>
+          <ng-container *ngFor="let row of this.getTextSegment();  let index = index; let last = last">
+            <tr [id]="'row-' + (PC_START + index * 4)" [class.selected-row]="rowIndex === (PC_START + index * 4)">
               <td>{{ this.getHexAddresses(row.address) }}</td>
               <td>{{ row.code }}</td>
               <td>{{ row.basic }}</td>
@@ -72,14 +72,14 @@
         </tbody>
       </table>
     </div>
-
-
   </div>
   <div class="container-bottom">
     <div class="buttons">
-      <button [disabled]="!canRun() || this.page <= 0" matTooltip="View next higher address range" (click)="previousPage()" class="next-back-buttons">
+      <button [disabled]="!canRun() || this.page <= 0" matTooltip="View next higher address range"
+        (click)="previousPage()" class="next-back-buttons">
         <mat-icon><img class="logo" src="assets/icons/back.svg"></mat-icon></button>
-      <button [disabled]="!canRun() || this.page >= MEM_PAGE_SIZE" matTooltip="View next lower address range" (click)="nextPage()" class="next-back-buttons">
+      <button [disabled]="!canRun() || this.page >= MEM_PAGE_SIZE" matTooltip="View next lower address range"
+        (click)="nextPage()" class="next-back-buttons">
         <mat-icon><img class="logo" src="assets/icons/next.svg"></mat-icon></button>
     </div>
     <select [(ngModel)]="memoryType" class="select-memory" [disabled]="!canRun()" (change)="selectOnChange()">
@@ -98,8 +98,8 @@
       Hexadecimal Values
     </label>
     <label for="meuCheckbox3" class="checkbox-label">
-      <input type="checkbox" id="checkbox3" name="meuCheckbox3" class="checkbox-style" 
-      [(ngModel)]="checkboxes.isAscii" disabled>
+      <input type="checkbox" id="checkbox3" name="meuCheckbox3" class="checkbox-style" [(ngModel)]="checkboxes.isAscii"
+        disabled>
       ASCII
     </label>
   </div>

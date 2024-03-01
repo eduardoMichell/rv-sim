@@ -2,10 +2,9 @@ import { toUnsigned32 } from '../riscv-utils';
 import { AluOperations } from '../constants';
 
 export class ALU {
-    constructor() {
-    }
+    constructor() {}
 
-    executeALU(aluControl: any, inputA: any, inputB: any) {
+    executeALU(aluControl: string, inputA: any, inputB: any) {
         let aluZero = false;
         let aluResult: any = 0;
         switch (aluControl) {
@@ -49,7 +48,7 @@ export class ALU {
     }
 
     checkIsZero(value: any) {
-        return value === 0;
+        return value == 0;
     }
 
 }

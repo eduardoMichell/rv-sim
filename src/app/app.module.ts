@@ -1,11 +1,8 @@
 import { NgModule } from '@angular/core';
-
 import { monacoConfig } from './core/monaco-config';
-
 import { AppComponent } from './app.component';
 import { DumpFileDialogComponent } from './core/dialogs/dump-file-dialog/dump-file-dialog.component';
 import { HelpDialogComponent } from './core/dialogs/help-dialog/help-dialog.component';
-
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from "@angular/forms";
@@ -27,7 +24,6 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
 import { RegFileComponent } from './components/reg-file/reg-file.component';
 import { RuntimeComponent } from './components/runtime/runtime.component';
 import { ExecuteComponent } from './components/runtime/execute/execute.component';
-
 
 @NgModule({
   declarations: [

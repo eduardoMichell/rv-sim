@@ -9,16 +9,12 @@ import { RuntimeService } from '../runtime-service/runtime.service';
   providedIn: 'root'
 })
 export class UtilsService {
-
   private console: string = "";
-
 
   constructor(
     private snackBar: MatSnackBar,
     private runtimeService: RuntimeService
-  ) {
-  }
-
+  ) { }
 
   async onFileSelected(event: any): Promise<string | null> {
     const file: File = event.target.files[0];
@@ -40,7 +36,7 @@ export class UtilsService {
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = reader.result?.toString();
-        this.setConsole('System',`${file.name} file has been opened`);
+        this.setConsole('System', `${file.name} file has been opened`);
         resolve(text || '');
       };
       reader.readAsText(file);
@@ -51,7 +47,7 @@ export class UtilsService {
     return "0x" + this.addZeros(parseInt(binary, 2).toString(16), 8);
   }
 
-  binaryToNumber(binary: string) {
+  binaryToDecimal(binary: string) {
     return parseInt(binary, 2);
   }
 
@@ -219,32 +215,6 @@ export class UtilsService {
       return this.numberToHexadecimal(value);
     } else {
       return value;
-    }
-  }
-
-
-  getMock() {
-    return {
-      "data": [
-        {
-          "directive": "word",
-          "label": "Array",
-          "source": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
-          "basic": [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
-        }
-      ],
-      "text": {
-        "source": [
-          ["addi", "s2", "zero", "11"],
-          ["addi", "s3", "zero", "-4"],
-          ["add", "s4", "s2", "s3"],
-        ],
-        "basic": [
-          ["addi", "x18", "x0", "11"],
-          ["addi", "x19", "x0", "-4"],
-          ["add", "x20", "x18", "x19"]
-        ]
-      }
     }
   }
 }

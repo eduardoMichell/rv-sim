@@ -1,23 +1,25 @@
 import { ConstantsInit } from '../constants'
 import { binaryToDecimal } from '../riscv-utils';
+import { Data } from '../types';
 
 export class DataMem {
     memory: any;
-    constructor(dataMem: any, data: any) {
+    constructor(dataMem: any, data: Data[]) {
         this.memory = this.setDataToDataMem(dataMem, data)
     }
-    writeMemory(address: any, data: any, memWrite: any) {
+    writeMemory(address: number, data: Data[], memWrite: boolean) {
         if (memWrite) {
             this.memory[address] = data;
         }
     }
-    readMemory(address: any, rgData2: any, memRead: any, memBen: any, memUsgn: any) {
+
+    readMemory(address: string, rgData2: any, memRead: boolean, memBen: any, memUsgn: any) {
         if (memRead) {
             return this.memory[binaryToDecimal(address)];
         }
     }
 
-    setDataToDataMem(datamem: any, data: any) {
+    setDataToDataMem(datamem: any, data: Data[]) {
         let total = 0
         for (const dataI of data) {
             for (let i = 0; i < dataI.basic.length; i++) {

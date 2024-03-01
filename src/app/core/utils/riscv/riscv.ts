@@ -9,6 +9,7 @@ import { ImmGen } from './immGen';
 import { multiplexer2x1 } from './controllers/multiplexers';
 import { add, aluDataSelector, memDataSelector } from './controllers/control';
 import { DumpTypes } from '../../utils/constants';
+import { Code } from '../../utils/types';
 import {
     convertArrayBinaryToHexadecimal,
     convertConfigToText,
@@ -27,21 +28,21 @@ import {
 
 
 export class RiscV {
-    code: any
-    regFile: any
-    instMem: any
-    dataMem: any
-    alu: any
-    pc: any
-    immGen: any
-    control: any
+    code: Code
+    regFile: RegFile;
+    instMem: InstMem;
+    dataMem: DataMem;
+    alu: ALU;
+    pc: PC;
+    immGen: ImmGen;
+    control: Control;
     constructor(asm: any) {
         const { code, memories } = asm;
         const { instMem, regFile, pc, dataMem } = memories;
         this.code = new RiscvConverter(code);
         this.regFile = new RegFile(regFile);
         this.instMem = new InstMem(instMem, this.code.text);
-        this.dataMem = new DataMem(dataMem, this.code.data);
+        this.dataMem = new DataMem(dataMem, this.code.data || []);
         this.alu = new ALU();
 
         this.pc = new PC(pc);
@@ -52,8 +53,7 @@ export class RiscV {
     runOneStep() {
         //PC
         const instruction = this.instMem.readInstruction(this.pc.getPc()).code;
-        console.log("--------------------------")
-        console.log('instruction', instruction, this.pc.getPc());
+
         //DECODE
         const {
             aluOp,
@@ -73,45 +73,22 @@ export class RiscV {
             memUsgn
         } = this.control.generateControl(getOpcode(instruction), getFunct3(instruction), getFunct7(instruction));
 
-        console.log("aluOp", aluOp)
-        console.log("aluSrcImm", aluSrcImm)
-        console.log("immShamt", immShamt)
-        console.log("immUp", immUp)
-        console.log("regWrite", regWrite)
-        console.log("invBranch", invBranch)
-        console.log("branch", branch)
-        console.log("jump", jump)
-        console.log("jalr", jalr)
-        console.log("memRead", memRead)
-        console.log("memWrite", memWrite)
-        console.log("loadUpImm", loadUpImm)
-        console.log("auipc", auipc)
-        console.log("memBen", memBen)
-        console.log("memUsgn", memUsgn)
-
         const rd1 = getBinaryRange(19, 15, instruction);
         const rd2 = getBinaryRange(24, 20, instruction);
-        console.log('rd1', rd1, 'rd2', rd2)
         const writeRg = getBinaryRange(11, 7, instruction);
-        console.log('writeRg', writeRg)
         const rgData1 = this.regFile.read(rd1);
         const rgData2 = this.regFile.read(rd2);
-        console.log('rgData1', rgData1, 'rgData2', rgData2)
         const instImm = this.immGen.generate(instruction, immShamt, immUp, memWrite, jump, jalr);
-        console.log('instImm', instImm)
 
         const immBranchValue = getBinaryRange(31, 31, instruction) +
             getBinaryRange(7, 7, instruction) + getBinaryRange(30, 25, instruction) +
             getBinaryRange(11, 8, instruction) + '0';
         const immBranch = binaryToDecimalSigned(resizeSigned(immBranchValue, 32));
 
-
         const { aluInput1, aluInput2 } = aluDataSelector(auipc, jump, jalr, aluSrcImm, this.pc.getPc(), instImm, rgData1, rgData2);
-        console.log('aluInput1', aluInput1, 'aluInput2', aluInput2)
 
         //EXEC
         const { aluZero, aluResult } = this.alu.executeALU(aluOp, aluInput1, aluInput2);
-        console.log('aluZero', aluZero, 'aluResult', aluResult)
 
         //MEM ACCESS
         this.dataMem.writeMemory(aluResult, rgData2, memWrite)
@@ -120,32 +97,26 @@ export class RiscV {
         //WRITEBACK
         const regFileWriteData = memDataSelector(memRead, loadUpImm, jump, dataMemData, instImm, this.pc.plusFour(), aluResult);
         this.regFile.write(regWrite, writeRg, regFileWriteData);
-        const pcSel = branch && (aluZero ^ invBranch);
-        console.log('pcSel', pcSel,)
+        const pcSel = branch && (Number(aluZero) ^ invBranch);
 
         const newPc = multiplexer2x1(this.pc.plusFour(), add(this.pc.getPc(), immBranch), pcSel);
-        console.log('newPc', newPc,)
-
         this.pc.setPc(newPc);
     }
 
-    runEntireProgram() {
-        for (const line of this.code.text.machineCode) {
-            this.runOneStep();
-        }
-    }
-
-
-    dump(type: any) {
+    dump(type: string) {
         switch (type) {
             case DumpTypes[0].typeName:
-                return this.code.text.machineCode;
+                if (this.code.text.machineCode) {
+                    return this.code.text.machineCode.toString().replace(/,/g, '\n');
+                } else {
+                    return "The code was not assembled correctly";
+                }
             case DumpTypes[1].typeName:
                 return convertArrayBinaryToHexadecimal(this.code.text.machineCode);
             case DumpTypes[2].typeName:
-                return convertConfigToText(this.code, this.instMem.memory, this.pc.getPc());
+                return convertConfigToText(this.code, this.pc.getPc());
+            default:
+                return "You selected a non-existent option";
         }
     }
-
-
 }

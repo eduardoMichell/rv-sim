@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-
 import { RuntimeService } from "./services/runtime-service/runtime.service";
 
 @Component({
@@ -10,19 +9,16 @@ import { RuntimeService } from "./services/runtime-service/runtime.service";
 })
 export class AppComponent implements OnInit, OnDestroy {
 
-
   constructor(
     private runtimeService: RuntimeService,
     public dialog: MatDialog
-  ) {
-  }
+  ) { }
 
   ngOnInit() {
     this.initSimulator();
   }
 
-  ngOnDestroy() {
-  }
+  ngOnDestroy() {}
 
   initSimulator() {
     this.runtimeService.setCheckboxes({
@@ -30,7 +26,6 @@ export class AppComponent implements OnInit, OnDestroy {
       isHexValues: true,
       isAscii: false
     });
-
   }
 }
 

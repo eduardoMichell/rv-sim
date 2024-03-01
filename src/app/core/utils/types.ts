@@ -10,7 +10,7 @@ export type Code = {
 
 export type Text = {
     source: Array<string[]>,
-    machineCode?: Array<string[]>,
+    machineCode?: Array<string>,
     basic: Array<string[]>,
     symbolTable?: Array<any>
 }
@@ -63,4 +63,3 @@ export type RegFile = {
     x30: number,
     x31: number
 }
-

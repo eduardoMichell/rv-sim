@@ -1,22 +1,21 @@
-import { Instructions } from '../utils/constants'
-
+import { Instructions } from '../utils/constants';
 export class Instruction {
-  line: any
-  inst: any
-  t1: any
-  t2: any
-  t3: any
-  info: any
-  constructor(inst: any) {
-    this.line = inst;
-    this.inst = inst[0] ? inst[0] : null;
-    this.t1 = inst[1] ? inst[1] : null;
-    this.t2 = inst[2] ? inst[2] : null;
-    this.t3 = inst[3] ? inst[3] : null;
+  line: string[];
+  inst: string;
+  t1: string;
+  t2: string;
+  t3: string;
+  info: any;
+  constructor(instruction: string[]) {
+    this.line = instruction;
+    this.inst = instruction[0] ? instruction[0] : "";
+    this.t1 = instruction[1] ? instruction[1] : "";
+    this.t2 = instruction[2] ? instruction[2] : "";
+    this.t3 = instruction[3] ? instruction[3] : "";
     this.info = this.getInstInfo(this.inst);
   }
 
-  getInstInfo(inst: any){
-    return Instructions[inst];
+  getInstInfo(instruction: string){
+    return Instructions[instruction];
   }
 }

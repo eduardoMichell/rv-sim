@@ -9,28 +9,28 @@ html {
 html {
   margin: 0;
   font-family: 'Lato', sans-serif !important;
-  background: $primary;
+  background: $s3;
 }
 
 
 .msg-success {
   background-color: #28a745;
-  color: #ffffff;
+  color: $t7;
 }
 
 .msg-error {
   background-color: #e35e6b;
-  color: #ffffff;
+  color: $t7;
 }
 
 .msg-success {
   background-color: #28a745;
-  color: #ffffff;
+  color: $t7;
 }
 
 .msg-warning {
   background-color: #e3955e;
-  color: #ffffff;
+  color: $t7;
   border-radius: 5px;
 }
  

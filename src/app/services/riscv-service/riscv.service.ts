@@ -37,23 +37,7 @@ export class RiscvService {
     return { error: false, data: result, message: 'Success' };
   }
 
-  runEntireProgram(convertedCode: Asm) {
-    const { memories, code } = convertedCode;
-    const riscv = new RiscV({ memories, code });
-    riscv.runEntireProgram();
-    const result = {
-      code: riscv.code,
-      memories: {
-        regFile: riscv.regFile.registers,
-        instMem: riscv.instMem.memory,
-        dataMem: riscv.dataMem.memory,
-        pc: riscv.pc.getPc()
-      }
-    }
-    return { error: false, data: result, message: 'Success' };
-  }
-
-  dumpFile(asm: any, type: any) {
+  dumpFile(asm: Asm, type: string) {
     const { memories, code } = asm;
     const riscv = new RiscV({ memories, code });
     const data = riscv.dump(type);

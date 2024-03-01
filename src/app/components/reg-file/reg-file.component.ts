@@ -78,7 +78,7 @@ export class RegFileComponent implements OnDestroy {
         return 's4';
       case 'x21':
         return 's5';
-        case 'x22':
+      case 'x22':
         return 's6';
       case 'x23':
         return 's7';
@@ -102,9 +102,7 @@ export class RegFileComponent implements OnDestroy {
     return '';
   }
 
-  getHexValues(value: any){
+  getHexValues(value: any) {
     return this.utilsService.isHexadecimalValues(value);
   }
-
-
 }

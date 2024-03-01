@@ -35,7 +35,7 @@ export class RuntimeComponent implements OnInit, OnDestroy {
     this.code = this.codeService.getCode();
     this.codeSubscription = combineLatest([this.codeService.convertedCode$, this.codeService.code$]).subscribe(([convertedCode, code]) => {
       this.convertedCode = convertedCode;
-      if(code != ""){
+      if (code != "") {
         this.code = code;
       }
     })

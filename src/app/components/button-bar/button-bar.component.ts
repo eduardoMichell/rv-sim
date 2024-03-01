@@ -59,7 +59,7 @@ export class ButtonBarComponent implements OnDestroy {
     this.runtimeSubscription.unsubscribe();
   }
 
-  async assembleCode() {
+  assembleCode() {
     this.setCode();
     const code = this.codeService.getConvertedCode();
     const { error, message } = assembly(code);
@@ -71,24 +71,32 @@ export class ButtonBarComponent implements OnDestroy {
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanRun(true);
       this.buttonService.setCanDump(true);
+      this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
       this.utilsService.setConsole('Assemble', 'operation completed with errors.');
     } else {
       this.utilsService.setConsole('Error', message);
     }
   }
 
-  async runOneStep() {
+  runOneStep() {
     if (!this.canExecuteInstruction()) {
       const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
+      this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
     } else {
       this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
     }
   }
 
   runEntireProgram() {
-    console.log("TODO");
+    if (!this.canExecuteInstruction()) {
+      while (!this.canExecuteInstruction()) {
+        this.runOneStep();
+      }
+    } else {
+      this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
+    }
   }
 
   undoLastStep() {
@@ -127,11 +135,6 @@ export class ButtonBarComponent implements OnDestroy {
     });
   }
 
-  isEnd() {
-    const convertedCode = this.codeService.getConvertedCode();
-    return convertedCode?.memories.pc === ConstantsInit.PC + (convertedCode.code.text.source.length * 4);
-  }
-
   canUndoLastStep() {
     const convertedCode = this.codeService.getConvertedCode();
     return convertedCode?.memories.pc === ConstantsInit.PC || this.buttonService.getCanUndoLastStep();
@@ -153,6 +156,11 @@ export class ButtonBarComponent implements OnDestroy {
 
   canExecuteInstruction(): boolean {
     return !this.buttonService.getCanRun() || this.isEnd()
+  }
+
+  isEnd() {
+    const convertedCode = this.codeService.getConvertedCode();
+    return convertedCode?.memories.pc === ConstantsInit.PC + (convertedCode.code.text.source.length * 4);
   }
 
   getCanRun() {

@@ -2,7 +2,6 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { ConstantsInit } from 'src/app/core/utils/constants';
-import { Asm } from 'src/app/core/utils/types';
 import { ButtonsService } from 'src/app/services/buttons-service/buttons.service';
 import { CodeService } from 'src/app/services/code-service/code.service';
 import { RuntimeService } from 'src/app/services/runtime-service/runtime.service';
@@ -15,10 +14,12 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
 })
 export class ExecuteComponent implements OnInit, OnDestroy {
   private runtimeSubscription: Subscription;
+  private buttonSubscription: Subscription;
 
   page: number = 0;
   MEM_PAGE_SIZE: number = ConstantsInit.MEM_PAGE_SIZE;
-
+  PC_START: number = ConstantsInit.PC;
+  rowIndex: number = 0;
   memoryTypes = [
     {
       init: ConstantsInit.DATA_MEM_INIT,
@@ -42,18 +43,25 @@ export class ExecuteComponent implements OnInit, OnDestroy {
     this.runtimeSubscription = this.runtimeService.checkboxes$.subscribe((checkboxes) => {
       this.checkboxes = checkboxes;
     });
+
+    this.buttonSubscription = this.buttonService.rowIndex$.subscribe((rowIndex) => {
+      this.scrollToSelectedRow(rowIndex);
+      this.rowIndex = rowIndex;
+    });
   }
 
   ngOnInit() {
+    this.scrollToSelectedRow(this.PC_START);
   }
 
   ngOnDestroy() {
     this.runtimeSubscription.unsubscribe();
+    this.buttonSubscription.unsubscribe();
   }
 
 
   getTextSegment() {
-    return this.createTextSegment(ConstantsInit.PC);
+    return this.createTextSegment(this.PC_START);
   }
 
   getDataSegment() {
@@ -109,7 +117,7 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   binaryToNumber(binary: any) {
-    return this.utils.binaryToNumber(binary);
+    return this.utils.binaryToDecimal(binary);
   }
 
   getHexValues(value: any) {
@@ -138,6 +146,14 @@ export class ExecuteComponent implements OnInit, OnDestroy {
 
   selectOnChange() {
     this.page = 0;
+  }
+
+  scrollToSelectedRow(number: number) {
+    const rowId = 'row-' + number;
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    }
   }
 
 }

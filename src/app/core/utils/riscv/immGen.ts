@@ -1,10 +1,9 @@
 import { getBinaryRange, resize, resizeSigned, binaryToDecimal, decimalToBinary, binaryToDecimalSigned } from '../riscv-utils';
 
 export class ImmGen {
-    constructor() {
+    constructor() {}
 
-    }
-    generate(instruction31to0: any, immShamt: any, immUp: any, memWrite: any, jump: any, jalr: any) {
+    generate(instruction31to0: string, immShamt: boolean, immUp: boolean, memWrite: boolean, jump: boolean, jalr: boolean) {
         const immShamtValue = getBinaryRange(24, 20, instruction31to0);
         const immUpValue = getBinaryRange(31, 12, instruction31to0);
         const immUpJValue = getBinaryRange(31, 31, instruction31to0) +

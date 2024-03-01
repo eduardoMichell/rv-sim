@@ -32,6 +32,187 @@ export function convertWrittenCode(code: string): Code {
     }
 }
 
+export function shiftLeft(decimal: number, base: number) {
+    return decimal << base;
+}
+
+export function decimalToBinary(decimal: any) {
+    const isNegative = decimal < 0;
+    return isNegative ? (decimal >>> 0).toString(2) : parseInt(decimal).toString(2);
+}
+
+export function hexadecimalToBinary(hex: string) {
+    return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+}
+
+export function getBinaryRange(left: number, right: number, imm: string) {
+    const reversedBinaryString = imm.split('').reverse().join('');
+    const result = reversedBinaryString.substring(right, left + 1);
+    return result.split('').reverse().join('');
+}
+
+export function binaryToHexadecimal(binary: string) {
+    return parseInt(binary, 2).toString(16).toUpperCase();
+}
+
+export function binaryToDecimal(binary: string) {
+    return parseInt(binary, 2);
+}
+
+export function binaryToDecimalSigned(binary: string) {
+    const negative = binary[0] === '1';
+    if (negative) {
+        let inverse = '';
+        for (let i = 1; i < binary.length; i++) {
+            inverse += binary[i] === '0' ? '1' : '0';
+        }
+        return (parseInt(inverse, 2) + 1) * -1;
+    } else {
+        return parseInt(binary, 2);
+    }
+}
+
+export function convertArrayBinaryToHexadecimal(code: any) {
+    const hex = [];
+    for (const binary of code) {
+        hex.push(hesizeHex(binaryToHexadecimal(binary), 10));
+    }
+    return hex.toString().replace(/,/g, '\n');
+}
+
+export function convertConfigToText(code: any, pc: number) {
+    const data: any = {
+        address: [],
+        code: [],
+        basic: [],
+        source: []
+    }
+    let pcCount = pc;
+    for (let i = 0; i < code.text.machineCode.length; i++) {
+        data.address.push(decimalToHex(pcCount));
+        data.code.push(hesizeHex(binaryToHexadecimal(code.text.machineCode[i]), 10));
+        data.basic.push(code.text.basic[i]);
+        data.source.push(code.text.source[i]);
+        pcCount += 4;
+    }
+    let text = 'Address        Code              Basic                   Line  Source\n';
+    for (let i = 0; i < data.address.length; i++) {
+      text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i+1}     ${data.source[i]}\n`;
+    }
+    return text;
+}
+
+export function decimalToHex(decimal: number): string {
+    return hesizeHex(decimal.toString(16), 10);
+}
+
+export function hesizeHex(instructions: string, quantity: number, number = '0') {
+    const increment = quantity - instructions.length;
+    for (let i = 0; i < increment; i++) {
+        instructions = (i === increment - 2 ? 'x' : number) + instructions;
+    }
+    return instructions;
+}
+
+export function resize(instruction: string, quantity: number, number = '0') {
+    const increment = quantity - instruction.length;
+    for (let i = 0; i < increment; i++) {
+        instruction = number + instruction;
+    }
+    return instruction;
+}
+
+export function resizeSigned(instruction: string, quantity: number) {
+    const number = instruction[0] === '1' ? '1' : '0';
+    const increment = quantity - instruction.length;
+    for (let i = 0; i < increment; i++) {
+        instruction = number + instruction;
+    }
+    return instruction;
+}
+
+export function toUnsigned32(num: number) {
+    return num >>> 0;
+}
+
+export function getOpcode(instruction: string) {
+    return getBinaryRange(6, 0, instruction);
+}
+
+export function getFunct3(instruction: string) {
+    return getBinaryRange(14, 12, instruction);
+
+}
+
+export function getFunct7(instruction: string) {
+    return getBinaryRange(31, 25, instruction);
+
+}
+
+function checkInstructions(line: string[], symbolTable: Array<any>) {
+    const instruction = line[0] ? line[0] : '';
+    switch (instruction) {
+        case 'add':
+        case 'sub':
+        case 'sll':
+        case 'slt':
+        case 'sltu':
+        case 'xor':
+        case 'srl':
+        case 'sra':
+        case 'or':
+        case 'and':
+            return checkRFormatInst(line);
+        case 'lb':
+        case 'lh':
+        case 'lw':
+        case 'lbu':
+        case 'lhu':
+        case 'sb':
+        case 'sh':
+        case 'sw':
+            return checkMemFormatInst(line);
+        case 'addi':
+        case 'jalr':
+        case 'slti':
+        case 'sltiu':
+        case 'xori':
+        case 'ori':
+        case 'andi':
+        case 'slli':
+        case 'srli':
+        case 'srai':
+            // case 'fence':
+            // case 'fence.i':
+            // case 'ecall':
+            // case 'ebreak':
+            // case 'csrrw':
+            // case 'csrrs':
+            // case 'csrrc':
+            // case 'csrrwi':
+            // case 'csrrsi':
+            // case 'csrrci': 
+            return checkIFormatInst(line);
+        case 'beq':
+        case 'bne':
+        case 'blt':
+        case 'bge':
+        case 'bltu':
+        case 'bgeu':
+            return checkBFormatInst(line, symbolTable);
+        case 'lui':
+        case 'auipc':
+            return checkUFormatInst(line);
+        case 'jal':
+            return checkJFormatInst(line);
+        default:
+            return {
+                error: true,
+                message: `"${instruction}" is not a recognized operator`,
+            }
+
+    }
+}
 
 function verifyText(text: Text) {
     for (const line of text.source) {
@@ -63,6 +244,7 @@ function verifyData(data: Data[]) {
         message: ''
     }
 }
+
 function checkDataElement(element: Data) {
     if (!element.label.includes(":")) {
         return {
@@ -191,7 +373,6 @@ function restrictNumber(numbers: string[]) {
     return newBasic;
 }
 
-
 function checkIfHaveDifferentDirectives(array: string[], directivesToIgnore: string[]) {
     const ignoreSet = new Set(directivesToIgnore);
     const directivesAux = Directives.filter((element: string) => !ignoreSet.has(element));
@@ -243,29 +424,6 @@ function firstElementNoString(array: string[]): any {
     };
 }
 
-function joinStrings(array: string[]) {
-    const result = [];
-    let currentString = '';
-
-    for (let i = 0; i < array.length; i++) {
-        const element = array[i];
-        if (element.startsWith('"')) {
-            if (currentString !== '') {
-                result.push(currentString);
-                currentString = '';
-            }
-            currentString = element;
-        } else if (element.endsWith('"')) {
-            currentString += element;
-            result.push(currentString);
-            currentString = '';
-        } else {
-            result.push(element);
-        }
-    }
-    return result;
-}
-
 function convertStringToNumberArray(string: string): number[] {
     const stringArrayNumber: number[] = [];
     const words = [];
@@ -292,71 +450,6 @@ function haveString(line: string[]): boolean {
         }
     }
     return false;
-}
-
-function checkInstructions(line: string[], symbolTable: Array<any>) {
-    const instruction = line[0] ? line[0] : '';
-    switch (instruction) {
-        case 'add':
-        case 'sub':
-        case 'sll':
-        case 'slt':
-        case 'sltu':
-        case 'xor':
-        case 'srl':
-        case 'sra':
-        case 'or':
-        case 'and':
-            return checkRFormatInst(line);
-        case 'lb':
-        case 'lh':
-        case 'lw':
-        case 'lbu':
-        case 'lhu':
-        case 'sb':
-        case 'sh':
-        case 'sw':
-            return checkMemFormatInst(line);
-        case 'addi':
-        case 'jalr':
-        case 'slti':
-        case 'sltiu':
-        case 'xori':
-        case 'ori':
-        case 'andi':
-        case 'slli':
-        case 'srli':
-        case 'srai':
-            // case 'fence':
-            // case 'fence.i':
-            // case 'ecall':
-            // case 'ebreak':
-            // case 'csrrw':
-            // case 'csrrs':
-            // case 'csrrc':
-            // case 'csrrwi':
-            // case 'csrrsi':
-            // case 'csrrci': 
-            return checkIFormatInst(line);
-        case 'beq':
-        case 'bne':
-        case 'blt':
-        case 'bge':
-        case 'bltu':
-        case 'bgeu':
-            return checkBFormatInst(line, symbolTable);
-        case 'lui':
-        case 'auipc':
-            return checkUFormatInst(line);
-        case 'jal':
-            return checkJFormatInst(line);
-        default:
-            return {
-                error: true,
-                message: `"${instruction}" is not a recognized operator`,
-            }
-
-    }
 }
 
 function checkRFormatInst(line: string[]) {
@@ -592,7 +685,7 @@ function checkJFormatInst(line: string[]) {
 function labelExist(newLabel: string, symbolTable: Array<any>): boolean {
     for (const label of symbolTable) {
         if (label.label === newLabel) {
-            return true
+            return true;
         }
     }
     return false;
@@ -629,120 +722,4 @@ function extractInstructionMemoryPosition(str: string) {
     } else {
         return { imm: '', reg: '' };
     }
-}
-
-
-
-
-// =====================================================
-export function shiftLeft(decimal: any, base: any) {
-    return decimal << base;
-}
-
-export function decimalToBinary(decimal: any) {
-    const isNegative = decimal < 0;
-    return isNegative ? (decimal >>> 0).toString(2) : parseInt(decimal).toString(2);
-}
-
-export function hexadecimalToBinary(hex: any) {
-    return (parseInt(hex, 16).toString(2)).padStart(8, '0');
-}
-
-export function getBinaryRange(left: any, right: any, imm: any) {
-    const reversedBinaryString = imm.split('').reverse().join('');
-    const result = reversedBinaryString.substring(right, left + 1);
-    return result.split('').reverse().join('');
-}
-export function binaryToHexadecimal(binary: any) {
-    return parseInt(binary, 2).toString(16).toUpperCase();
-}
-
-export function binaryToDecimal(binary: any) {
-    return parseInt(binary, 2);
-}
-
-export function binaryToDecimalSigned(binary: any) {
-    const negative = binary[0] === '1';
-    if (negative) {
-        let inverse = '';
-        for (let i = 1; i < binary.length; i++) {
-            inverse += binary[i] === '0' ? '1' : '0';
-        }
-        return (parseInt(inverse, 2) + 1) * -1;
-    } else {
-        return parseInt(binary, 2);
-    }
-}
-
-export function convertArrayBinaryToHexadecimal(code: any) {
-    const hex = [];
-    for (const binary of code) {
-        hex.push(addHexZeros(binaryToHexadecimal(binary), 10));
-    }
-    return hex;
-}
-export function convertConfigToText(code: any, instMem: any, pc: any) {
-    const data: any = {
-        address: [],
-        code: [],
-        basic: [],
-        source: []
-    }
-    let pcCount = Number.parseInt(pc);
-
-    for (let i = 0; i < code.text.code.length; i++) {
-        data.address.push(decimalToHex(pcCount));
-        data.code.push(addHexZeros(binaryToHexadecimal(code.text.code[i]), 10));
-        data.basic.push(code.text.basic[i]);
-        data.source.push(code.text.source[i]);
-        pcCount += 4;
-    }
-    return data;
-}
-
-export function decimalToHex(decimal: any): any {
-    return addHexZeros(decimal.toString(16), 10);
-}
-
-export function addHexZeros(inst: any, quantity: any, number = '0') {
-    const increment = quantity - inst.length;
-    for (let i = 0; i < increment; i++) {
-        inst = (i === increment - 2 ? 'x' : number) + inst;
-    }
-    return inst;
-}
-
-
-export function resize(inst: any, quantity: any, number = '0') {
-    const increment = quantity - inst.length;
-    for (let i = 0; i < increment; i++) {
-        inst = number + inst;
-    }
-    return inst;
-}
-
-
-export function resizeSigned(inst: any, quantity: any) {
-    const number = inst[0] === '1' ? '1' : '0';
-    const increment = quantity - inst.length;
-    for (let i = 0; i < increment; i++) {
-        inst = number + inst;
-    }
-    return inst;
-}
-
-export function toUnsigned32(num: any) {
-    return num >>> 0;
-}
-
-export function getOpcode(instruction: any) {
-    return getBinaryRange(6, 0, instruction);
-}
-export function getFunct3(instruction: any) {
-    return getBinaryRange(14, 12, instruction);
-
-}
-export function getFunct7(instruction: any) {
-    return getBinaryRange(31, 25, instruction);
-
 }

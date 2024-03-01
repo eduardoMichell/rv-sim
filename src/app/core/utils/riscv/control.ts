@@ -5,7 +5,7 @@ export class Control {
     constructor() {
     }
 
-    generateControl(opcode: any, funct3: any, funct7: any) {
+    generateControl(opcode: string, funct3: string, funct7: string) {
         let aluOp: any = 0;
         let aluSrcImm: any = 0;
         let immShamt: any = 0;
@@ -23,21 +23,16 @@ export class Control {
         let memUsgn: any = 0;
 
         const instructionFormat = this.getInstructionFormat(opcode);
-        console.log("instructionFormat", instructionFormat)
+
         // -------------------- ALU --------------------
         const shiftOp = getBinaryRange(1, 0, funct3) === '01' ? 1 : 0;
         const branchOp = this.getBranchOperation(funct3);
-        console.log("branchOp", branchOp)
         const addSubOp = funct3 === '000' ? 1 : 0;
         aluOp = this.getAluOp(funct3, funct7, branchOp, shiftOp, addSubOp, instructionFormat);
-
         aluSrcImm = instructionFormat !== InstFormat.R && instructionFormat !== InstFormat.B;
 
         // -------------------- IMMEDIATE SELECTOR --------------------
-        //instr[24:20]
         immShamt = (instructionFormat === InstFormat.IARITH || instructionFormat === InstFormat.R) && (shiftOp === 1);
-
-        //instr[31:12] -> imm[31:12]
         immUp = (instructionFormat === InstFormat.ULUI || instructionFormat === InstFormat.UAUIPC);
 
         // -------------------- REGISTER BANK --------------------
@@ -79,7 +74,7 @@ export class Control {
         }
     }
 
-    getInstructionFormat(opcode: any) {
+    getInstructionFormat(opcode: string) {
         switch (opcode) {
             case Opcodes.R:
                 return InstFormat.R;
@@ -109,7 +104,7 @@ export class Control {
     }
 
 
-    getBranchOperation(funct3: any) {
+    getBranchOperation(funct3: string) {
         const funct3to2 = getBinaryRange(2, 1, funct3);
         switch (funct3to2) {
             case '00':
@@ -123,7 +118,7 @@ export class Control {
         }
     }
 
-    getAluOp(funct3: any, funct7: any, branchOp: any, shiftOp: any, addSubOp: any, format: any) {
+    getAluOp(funct3: string, funct7: string, branchOp: string, shiftOp: number, addSubOp: number, format: string) {
         if (format === InstFormat.IARITH) {
             return (parseInt(getBinaryRange(5, 5, funct7)) && shiftOp) + funct3;
         } else {

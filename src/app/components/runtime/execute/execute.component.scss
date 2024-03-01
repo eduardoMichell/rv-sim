@@ -1,3 +1,5 @@
+@import '/src/assets/colors';
+
 .execute-section-container {
     display: flex;
     flex-direction: column;
@@ -8,7 +10,7 @@
     margin-top: 18px;
     width: 98%;
     overflow: hidden;
-    border: 1px solid #1E1E1E;
+    border: 1px solid $s1;
     border-radius: 8px 8px 0px 0px;
     height: 290px;
     max-height: 290px;
@@ -18,10 +20,10 @@
     margin-top: 15px;
     width: 98%;
     height: 213px;
-    border: 1px solid #1E1E1E;
+    border: 1px solid $s1;
     border-radius: 8px;
-    background: linear-gradient(0deg, #292929, #292929),
-        linear-gradient(0deg, #1E1E1E, #1E1E1E);
+    background: linear-gradient(0deg, $s2, $s2),
+        linear-gradient(0deg, $s1, $s1);
 }
 
 .icon-title {
@@ -41,7 +43,6 @@
     border-radius: 8px 8px 0px 0px;
 }
 
-
 .text-segment-table {
     width: 100%;
     border: 0;
@@ -60,8 +61,7 @@ table {
 
 thead {
     height: 32px;
-    background-color: #3A3A3A;
-
+    background-color: $s3;
 }
 
 th {
@@ -69,13 +69,12 @@ th {
     font-size: 14px;
     line-height: 32px;
     font-weight: 500;
-    color: #CCCCCC;
+    color: $s7;
     position: sticky;
     top: 0;
     z-index: 2;
     vertical-align: middle;
 }
-
 
 .text-segment-body {
     max-height: 130px;
@@ -123,8 +122,8 @@ hr {
     align-items: center;
     width: 98%;
     justify-content: center;
-    background-color: #292929;
-    border: 1px solid #1E1E1E;
+    background-color: $s2;
+    border: 1px solid $s1;
     border-radius: 0px 0px 8px 8px;
     border-top: none;
 }
@@ -133,24 +132,24 @@ hr {
     width: 56px;
     height: 36px;
     border-radius: 8px;
-    border: 1px solid #828282;
+    border: 1px solid $s7;
     box-shadow: 0px 1.2000000476837158px 5.400000095367432px 0px rgba(0, 0, 0, 0.25);
-    background-color: #1E1E1E;
+    background-color: $s1;
 }
 
 .next-back-buttons:hover {
-    background: #FD9E3D;
-    border: 1px solid #FD9E3D;
+    background: $p7;
+    border: 1px solid $p7;
 }
 
 .next-back-buttons:active {
-    background: #E35C1F;
-    border: 1px solid #E35C1F;
+    background: $p1;
+    border: 1px solid $p1;
 }
 
 .next-back-buttons:disabled {
-    background: #3A3A3A;
-    border: 1px solid #828282;
+    background: $s3;
+    border: 1px solid $s7;
 }
 
 .logo {
@@ -170,9 +169,9 @@ hr {
     border-radius: 6px;
     width: 200px;
     height: 36px;
-    border: 1px solid #828282;
-    background-color: #1E1E1E;
-    color: #ffffff;
+    border: 1px solid $s7;
+    background-color: $s1;
+    color: $t7;
     font-size: 16px;
     font-weight: 400;
     margin-right: 20px;
@@ -184,13 +183,13 @@ select:focus {
 }
 
 select:hover {
-    border: 1px solid #F06E29;
+    border: 1px solid $p3;
 }
 
 select:disabled,
 select:hover:disabled {
-    color: #828282;
-    border: 1px solid #828282;
+    color: $s7;
+    border: 1px solid $s7;
 }
 
 select option {
@@ -212,38 +211,38 @@ select option {
     border-radius: 4px;
     width: 16px;
     height: 16px;
-    background: #292929;
+    background: $s2;
     margin-right: 6px;
     -webkit-appearance: none;
     cursor: pointer;
 }
 
 .checkbox-style:hover {
-    border: 1.4px solid #F37A2E;
+    border: 1.4px solid $p4;
 }
 
 input[type="checkbox"]:checked {
-    color: #ffffff;
-    background-color: #F37A2E;
+    color: $t7;
+    background-color: $p4;
 }
 
 input[type="checkbox"]:checked::before {
-    color: #ffffff;
+    color: $t7;
     content: "✔";
     line-height: 0px;
     margin-left: 2px;
     box-sizing: border-box;
     border-radius: 4px;
-    background-color: #F37A2E;
+    background-color: $p4;
 }
 
 input[type="checkbox"]:checked:hover {
-    background: #E35C1F;
-    border: 1.4px solid #E35C1F;
+    background: $p1;
+    border: 1.4px solid $p1;
 }
 
 input[type="checkbox"]:checked:hover::before {
-    background: #E35C1F;
+    background: $p1;
 }
 
 input[type="checkbox"]:focus {
@@ -251,22 +250,22 @@ input[type="checkbox"]:focus {
 }
 
 input[type="checkbox"]:disabled {
-    border: 1.4px solid #4C4C4C;
+    border: 1.4px solid $s4;
 }
 
 input[type="checkbox"]:checked:disabled {
-    background: #5E5E5E;
-    border: 1.4px solid #5E5E5E;
+    background: $s5;
+    border: 1.4px solid $s5;
 }
 
 input[type="checkbox"]:checked:disabled::before {
-    color: #ffffff;
+    color: $t7;
     content: "✔";
     line-height: 0px;
     margin-left: 2px;
     box-sizing: border-box;
     border-radius: 4px;
-    background: #5E5E5E;
+    background: $s5;
 }
 
 tbody::-webkit-scrollbar {
@@ -274,11 +273,16 @@ tbody::-webkit-scrollbar {
 }
 
 tbody::-webkit-scrollbar-thumb {
-    background: linear-gradient(0deg, #1E1E1E, #1E1E1E);
-    border: 1px solid #5E5E5E;
+    background: linear-gradient(0deg, $s1, $s1);
+    border: 1px solid $s5;
     border-radius: 8px;
 }
 
 tbody::-webkit-scrollbar-track {
     background-color: none;
 }
+
+.selected-row {
+    background-color: $s4;
+}
+ 

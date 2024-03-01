@@ -10,7 +10,7 @@
   min-width: 800px;
   min-height: 500px;
 }
- 
+
 .runtime {
   display: flex;
   width: 99%;
@@ -20,4 +20,6 @@
   width: 100%;
 }
 
- 
+.selected-row {
+  background-color: lightblue;
+}

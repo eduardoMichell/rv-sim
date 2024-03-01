@@ -6,19 +6,19 @@ export class RegFile {
         this.registers = regFile;
     }
 
-    writeRegister(index: any, value: any) {
+    writeRegister(index: string, value: string) {
         this.registers[index] = value;
     }
 
-    readRegister(index: any) {
+    readRegister(index: string) {
         return this.registers[index];
     }
 
-    read(rd: any) {
+    read(rd: string) {
         return this.readRegister('x' + binaryToDecimal(rd));
     }
 
-    write(regWrite: any, writeRg: any, data: any) {
+    write(regWrite: boolean, writeRg: string, data: string) {
         if (regWrite) {
             this.writeRegister('x' + binaryToDecimal(writeRg), data);
         }

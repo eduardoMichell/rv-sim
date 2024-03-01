@@ -56,7 +56,3 @@ export function memDataSelector(
     }
     return result;
 }
-
-export function shiftLeft (data: any, base: any){
-    return data << base;
-}

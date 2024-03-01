@@ -9,7 +9,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class HelpDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<HelpDialogComponent>) {
-    
   }
 
   closeDialog(){

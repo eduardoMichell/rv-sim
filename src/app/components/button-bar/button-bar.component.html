@@ -14,7 +14,7 @@
             <button (click)="assembleCode()" matTooltip="Assemble Code"><mat-icon><img class="logo"
                               src="assets/icons/assembly.svg"></mat-icon></button>
                               <!-- canExecuteInstruction() -->
-            <button (click)="runEntireProgram()" [disabled]="true"><mat-icon><img class="logo"
+            <button (click)="runEntireProgram()" [disabled]="canExecuteInstruction()"><mat-icon><img class="logo"
                               src="assets/icons/execute.svg"></mat-icon></button>
 
             <button (click)="runOneStep()" [disabled]="canExecuteInstruction()"><mat-icon><img class="logo"

@@ -7,9 +7,9 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
   styleUrls: ['./console.component.scss']
 })
 export class ConsoleComponent {
-  constructor(private utils: UtilsService) {   
+  constructor(private utils: UtilsService) {
   }
-  
+
   printConsole(func: string, message: string) {
     this.utils.setConsole(func, message);
   }
@@ -21,6 +21,4 @@ export class ConsoleComponent {
   clearConsole() {
     this.utils.clearConsole();
   }
-
-
 }

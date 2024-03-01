@@ -5,14 +5,13 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class RuntimeService {
-
   private currentTabIndex: number;
-  currentTabIndex$ = new Subject<number>(); 
+  currentTabIndex$ = new Subject<number>();
 
   private checkboxes: any;
-  checkboxes$ = new Subject<any>(); 
+  checkboxes$ = new Subject<any>();
 
-  constructor() { 
+  constructor() {
     this.currentTabIndex = 0;
     this.checkboxes = {
       isHexAddresses: true,
@@ -21,22 +20,21 @@ export class RuntimeService {
     }
   }
 
-  setCurrentTabIndex(currentTabIndex: number){
+  setCurrentTabIndex(currentTabIndex: number) {
     this.currentTabIndex = currentTabIndex;
     this.currentTabIndex$.next(currentTabIndex);
   }
 
-  getCurrentTabIndex(){
+  getCurrentTabIndex() {
     return this.currentTabIndex;
   }
 
-
-  setCheckboxes(checkboxes: any){
+  setCheckboxes(checkboxes: any) {
     this.checkboxes = checkboxes;
     this.checkboxes$.next(checkboxes);
   }
 
-  getCheckboxes(){
+  getCheckboxes() {
     return this.checkboxes;
   }
 }

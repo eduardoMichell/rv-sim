@@ -11,7 +11,7 @@ export function createText(code: string): Text {
         }
     }
 
-    let source: Array<string[]> = []
+    let source: Array<string[]> = [];
     if (!checkSegment(lineArrayCode, '.data') && !checkSegment(lineArrayCode, '.text')) {
         source = lineArrayCode;
     } else {
@@ -25,7 +25,7 @@ export function createText(code: string): Text {
     }
     const { newSource, symbolTable } = createSymbolTable(source);
     // const text = verifyPseudoInstructions(newSource);
-    const basic: Array<string[]> = convertTextBasicLabels(createBasic(newSource), symbolTable);
+    const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
 
     return {
         source,
@@ -36,7 +36,6 @@ export function createText(code: string): Text {
 
 export function createData(code: string): Array<Data> {
     const lineArrayCode: string[][] = separateCode(code);
-    console.log(lineArrayCode)
     let dataToText = [];
     const data: Array<Data> = [];
     if (checkSegment(lineArrayCode, '.data') && checkSegment(lineArrayCode, '.text')) {
@@ -86,8 +85,18 @@ export function createData(code: string): Array<Data> {
     return data;
 }
 
+export function checkSegment(lineArrayCode: string[][], segment: string): boolean {
+    for (const line of lineArrayCode) {
+        for (const element of line) {
+            if (element.includes(segment)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function separateDataLinesByLabel(data: string[][]) {
-    console.log(data)
     const newData: string[][] = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newData.length; i++) {
         if (i > 0) {
@@ -101,17 +110,6 @@ function separateDataLinesByLabel(data: string[][]) {
             }
         }
     }
-    
-    // for (let i = 0; i < newData.length; i++) {
-    //     if (i > 0) {
-    //         if (!newData[i][0].includes(":")) {
-    //             newData[i - 1] = newData[i - 1].concat(newData[i]);
-    //             newData.splice(i, 1);
-    //             i--;
-    //         }
-    //     }
-    // }
-    console.log(newData)
     return newData;
 }
 
@@ -207,7 +205,6 @@ function separateDirectives(array: Array<string[]>): Array<string[]> {
 
 function separateElements(code: Array<string[]>) {
     let newCode = [];
-
     for (const line of code) {
         if (line.some(element => element.includes(":"))) {
             let index = line.findIndex(element => element.includes(":"));
@@ -229,7 +226,6 @@ function separateElements(code: Array<string[]>) {
             newCode.push(line);
         }
     }
-
     return newCode;
 }
 
@@ -238,13 +234,12 @@ function removeComments(code: Array<string[]>): Array<string[]> {
         if (Array.isArray(code[i])) {
             code[i] = code[i].map(element => element.replace(/\t/g, ""));
             code[i] = code[i].filter(element => !element.includes("#"));
-
         }
     }
     return code.filter(element => element.length > 0);
 }
 
-function createBasic(source: string[][]): string[][] {
+function createTextBasic(source: string[][]): string[][] {
     const basic = JSON.parse(JSON.stringify(source));
     for (let i = 0; i < basic.length; i++) {
         for (let j = 0; j < basic[i].length; j++) {
@@ -264,7 +259,6 @@ function createBasic(source: string[][]): string[][] {
     }
     return basic;
 }
-
 
 function createLineArrayCode(separatedLineCode: string[]): Array<string[]> {
     const lineArrayCode: string[][] = [];
@@ -300,27 +294,11 @@ function createLineArrayCode(separatedLineCode: string[]): Array<string[]> {
 
 function combineAfterHash(array: string[]): string[] {
     const hashIndex = array.findIndex(element => element.includes('#'));
-
     if (hashIndex === -1) {
-        return array; // Retorna o array original se nenhum elemento contiver '#'
+        return array; 
     }
-
     const combinedString = array.slice(hashIndex).join(' ');
-
-    // Substitui os elementos após o '#' pela string combinada
     const newArray = array.slice(0, hashIndex + 1);
     newArray[newArray.length - 1] = combinedString;
-
     return newArray;
-}
-
-export function checkSegment(lineArrayCode: string[][], segment: string): boolean {
-    for (const line of lineArrayCode) {
-        for (const element of line) {
-            if (element.includes(segment)) {
-                return true;
-            }
-        }
-    }
-    return false;
 }
