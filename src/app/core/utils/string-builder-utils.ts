@@ -14,22 +14,19 @@ export function createText(code: string): Text {
     let source: Array<string[]> = [];
     if (!checkSegment(lineArrayCode, '.data') && !checkSegment(lineArrayCode, '.text')) {
         source = lineArrayCode;
-    } else {
-        if (!checkSegment(lineArrayCode, '.data') && checkSegment(lineArrayCode, '.text')) {
-            source = removeOnlyTextDirective(lineArrayCode);
-        } else {
-            if (checkSegment(lineArrayCode, '.data') && checkSegment(lineArrayCode, '.text')) {
-                source = removeFromText(lineArrayCode);
-            }
-        }
+    } else if (!checkSegment(lineArrayCode, '.data') && checkSegment(lineArrayCode, '.text')) {
+        source = removeOnlyTextDirective(lineArrayCode);
+    } else if (checkSegment(lineArrayCode, '.data') && checkSegment(lineArrayCode, '.text')) {
+        source = removeFromText(lineArrayCode);
     }
+
     const { newSource, symbolTable } = createSymbolTable(source);
 
     const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
     console.log(newSource)
     console.log(basic)
     console.log(symbolTable)
-    // const text = verifyPseudoInstructions(newSource, basic);
+    const text = verifyPseudoInstructions(newSource, basic);
 
     return {
         source,
@@ -101,15 +98,50 @@ export function checkSegment(lineArrayCode: string[][], segment: string): boolea
 }
 
 function verifyPseudoInstructions(source: Array<string[]>, basic: Array<string[]>) {
-    for (const line of source) {
-
+    const newSouce: Array<string[]> = [];
+    const newBasic: Array<string[]> = [];
+    for (let i = 0; i < source.length; i++) {
+        const { sourceIndex, basicWithPseudo } = createPseudo(basic[i]);
+        newBasic.push(basicWithPseudo.flat());
+        newSouce.push(source[i]);
+        if(sourceIndex > 0){
+            for(let j = 0; j < sourceIndex; j++){
+                newSouce.push([]);
+            }
+        }  
     }
-    return source;
+    return { newSouce, newBasic };
 }
 
 function createPseudo(line: string[]) {
     //'bgt', 'bgtu', 'ble', 'bleu', 'j', 'jr', 'la', 'lb', 'lh', 'lw', 'nop', 'sb', 'sw', 'sh', jal
+    let sourceIndex = 0;
+    let basicWithPseudo: string[] = [];
+    const instruction = line[0];
+    switch (instruction) {
+        case "bgt":
+        case "bgtu":
+        case "ble":
+        case "bleu":
+        case "j":
+        case "jr":
+        case "jal":
+        case "la":
+        case "lb":
+        case "lh":
+        case "lw":
+        case "sb":
+        case "sw":
+        case "sh":
+        case "nop":
+        default:
+            basicWithPseudo = line;
 
+    }
+    return {
+        sourceIndex,
+        basicWithPseudo
+    }
 }
 
 
