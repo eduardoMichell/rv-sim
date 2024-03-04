@@ -10,6 +10,9 @@ export function assembly(code: Asm) {
         }
 
     }
+
+    //TODO: verifySymbolTable;
+
     // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer
     // ".ascii" directive cannot appear in text segment
     const resText = verifyText(code.code.text);
@@ -259,7 +262,7 @@ function checkDataElement(element: Data) {
             message: `"${element.label}" cannot have special characters`
         }
     }
-    console.log(element.directive)
+
     switch (element.directive) {
         case ".ascii":
         case ".string":
@@ -411,7 +414,6 @@ function firstElementNoString(array: string[]): any {
                 };
             }
         } else if (incompleteString !== '') {
-            console.log(array[i])
             return {
                 error: true,
                 message: `"${incompleteString.trim()}" is not a valid string`
@@ -597,14 +599,7 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
             message: `"${t2}" operand is of incorrect type`
         }
     }
-
-    // if (!isValidLabel(label)) {
-    //     return {
-    //         error: true,
-    //         message: `"${label}" Invalid language element`
-    //     }
-    // }
-
+    
     if (!labelExist(label, symbolTable)) {
         return {
             error: true,

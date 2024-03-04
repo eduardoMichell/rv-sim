@@ -24,8 +24,12 @@ export function createText(code: string): Text {
         }
     }
     const { newSource, symbolTable } = createSymbolTable(source);
-    // const text = verifyPseudoInstructions(newSource);
+
     const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
+    console.log(newSource)
+    console.log(basic)
+    console.log(symbolTable)
+    // const text = verifyPseudoInstructions(newSource, basic);
 
     return {
         source,
@@ -96,13 +100,27 @@ export function checkSegment(lineArrayCode: string[][], segment: string): boolea
     return false;
 }
 
+function verifyPseudoInstructions(source: Array<string[]>, basic: Array<string[]>) {
+    for (const line of source) {
+
+    }
+    return source;
+}
+
+function createPseudo(line: string[]) {
+    //'bgt', 'bgtu', 'ble', 'bleu', 'j', 'jr', 'la', 'lb', 'lh', 'lw', 'nop', 'sb', 'sw', 'sh', jal
+
+}
+
+
+
 function separateDataLinesByLabel(data: string[][]) {
     const newData: string[][] = JSON.parse(JSON.stringify(data));
     for (let i = 0; i < newData.length; i++) {
         if (i > 0) {
             const currentLabel = newData[i][0];
             const previousLabel = newData[i - 1][0];
-            
+
             if (!currentLabel.includes(":") || !previousLabel.includes(":")) {
                 newData[i - 1] = newData[i - 1].concat(newData[i]);
                 newData.splice(i, 1);
@@ -120,9 +138,12 @@ function convertTextBasicLabels(basic: Array<string[]>, symbolTable: Array<any>)
             const labelName = labelObj.label;
             const labelPos = labelObj.labelPosition;
             transformedInstructions.forEach((instr, idx) => {
-                if (instr[3] === labelName) {
-                    const instrIndex = labelPos - idx;
-                    instr[3] = (instrIndex * 4).toString();
+                for (let i = 1; i <= 3; i++) {
+                    if (instr[i] === labelName) {
+                        const instrIndex = labelPos - idx;
+                        instr[i] = (instrIndex * 4).toString();
+                        break;
+                    }
                 }
             });
         });
@@ -295,7 +316,7 @@ function createLineArrayCode(separatedLineCode: string[]): Array<string[]> {
 function combineAfterHash(array: string[]): string[] {
     const hashIndex = array.findIndex(element => element.includes('#'));
     if (hashIndex === -1) {
-        return array; 
+        return array;
     }
     const combinedString = array.slice(hashIndex).join(' ');
     const newArray = array.slice(0, hashIndex + 1);
