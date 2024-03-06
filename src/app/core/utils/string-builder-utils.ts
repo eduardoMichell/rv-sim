@@ -23,14 +23,11 @@ export function createText(code: string): Text {
     const { newSource, symbolTable } = createSymbolTable(source);
 
     const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
-    console.log(newSource)
-    console.log(basic)
-    console.log(symbolTable)
     const text = verifyPseudoInstructions(newSource, basic);
-
+    console.log(text)
     return {
-        source,
-        basic,
+        source: text.newSouce,
+        basic: text.newBasic,
         symbolTable
     };
 }
@@ -104,28 +101,38 @@ function verifyPseudoInstructions(source: Array<string[]>, basic: Array<string[]
         const { sourceIndex, basicWithPseudo } = createPseudo(basic[i]);
         newBasic.push(basicWithPseudo.flat());
         newSouce.push(source[i]);
-        if(sourceIndex > 0){
-            for(let j = 0; j < sourceIndex; j++){
+        if (sourceIndex > 0) {
+            for (let j = 0; j < sourceIndex; j++) {
                 newSouce.push([]);
             }
-        }  
+        }
     }
     return { newSouce, newBasic };
 }
 
 function createPseudo(line: string[]) {
-    //'bgt', 'bgtu', 'ble', 'bleu', 'j', 'jr', 'la', 'lb', 'lh', 'lw', 'nop', 'sb', 'sw', 'sh', jal
+    //'j', 'jr', 'la', 'lb', 'lh', 'lw', 'sb', 'sw', 'sh', jal
     let sourceIndex = 0;
     let basicWithPseudo: string[] = [];
     const instruction = line[0];
     switch (instruction) {
         case "bgt":
         case "bgtu":
+            basicWithPseudo = convertBranchIfGreater(line);
+            break;
         case "ble":
         case "bleu":
+            basicWithPseudo = convertBranchIfLess(line);
+            break;
         case "j":
+            basicWithPseudo = converJump(line);
+            break;
         case "jr":
+            basicWithPseudo = converJumpRegister(line);
+            break;
         case "jal":
+            basicWithPseudo = converJumpAndLinkWithOnlyLabel(line);
+            break;
         case "la":
         case "lb":
         case "lh":
@@ -134,6 +141,8 @@ function createPseudo(line: string[]) {
         case "sw":
         case "sh":
         case "nop":
+            basicWithPseudo = ['addi', 'x0', 'x0', '0'];
+            break;
         default:
             basicWithPseudo = line;
 
@@ -142,6 +151,47 @@ function createPseudo(line: string[]) {
         sourceIndex,
         basicWithPseudo
     }
+}
+
+function converJump(line: string[]) {
+    const label = line[1] ? line[1] : '';
+    return ['jal', 'x0', label];
+}
+
+function converJumpRegister(line: string[]) {
+    if (line.length === 2) {
+        const t1 = line[1] ? line[1] : '';
+        return ['jal', 'x0', t1, '0'];
+    } else {
+        return line;
+    }
+}
+
+function converJumpAndLinkWithOnlyLabel(line: string[]) {
+    if (line.length === 2) {
+        const label = line[1] ? line[1] : '';
+        return ['jal', 'x1', label];
+    } else {
+        return line;
+    }
+}
+
+
+
+function convertBranchIfGreater(line: string[]) {
+    const instruction = line[0].includes('u') ? 'bltu' : 'blt';
+    const t1 = line[1] ? line[1] : '';
+    const t2 = line[2] ? line[2] : '';
+    const label = line[3] ? line[3] : '';
+    return [instruction, t2, t1, label];
+}
+
+function convertBranchIfLess(line: string[]) {
+    const instruction = line[0].includes('u') ? 'bgeu' : 'bge';
+    const t1 = line[1] ? line[1] : '';
+    const t2 = line[2] ? line[2] : '';
+    const label = line[3] ? line[3] : '';
+    return [instruction, t2, t1, label];
 }
 
 

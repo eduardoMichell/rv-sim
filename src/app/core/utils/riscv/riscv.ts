@@ -53,7 +53,6 @@ export class RiscV {
     runOneStep() {
         //PC
         const instruction = this.instMem.readInstruction(this.pc.getPc()).code;
-
         //DECODE
         const {
             aluOp,
@@ -72,7 +71,7 @@ export class RiscV {
             memBen,
             memUsgn
         } = this.control.generateControl(getOpcode(instruction), getFunct3(instruction), getFunct7(instruction));
-
+        
         const rd1 = getBinaryRange(19, 15, instruction);
         const rd2 = getBinaryRange(24, 20, instruction);
         const writeRg = getBinaryRange(11, 7, instruction);
@@ -86,20 +85,19 @@ export class RiscV {
         const immBranch = binaryToDecimalSigned(resizeSigned(immBranchValue, 32));
 
         const { aluInput1, aluInput2 } = aluDataSelector(auipc, jump, jalr, aluSrcImm, this.pc.getPc(), instImm, rgData1, rgData2);
-
+           
         //EXEC
         const { aluZero, aluResult } = this.alu.executeALU(aluOp, aluInput1, aluInput2);
 
-        //MEM ACCESS
+        // MEM ACCESS
         this.dataMem.writeMemory(aluResult, rgData2, memWrite)
         const dataMemData = this.dataMem.readMemory(aluResult, rgData2, memRead, memBen, memUsgn);
 
-        //WRITEBACK
+        // WRITEBACK
         const regFileWriteData = memDataSelector(memRead, loadUpImm, jump, dataMemData, instImm, this.pc.plusFour(), aluResult);
         this.regFile.write(regWrite, writeRg, regFileWriteData);
         const pcSel = branch && (Number(aluZero) ^ invBranch);
-
-        const newPc = multiplexer2x1(this.pc.plusFour(), add(this.pc.getPc(), immBranch), pcSel);
+        const newPc = jump ? aluResult : multiplexer2x1(this.pc.plusFour(), add(this.pc.getPc(), immBranch), pcSel);
         this.pc.setPc(newPc);
     }
 

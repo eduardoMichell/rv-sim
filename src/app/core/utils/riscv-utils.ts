@@ -100,7 +100,7 @@ export function convertConfigToText(code: any, pc: number) {
     }
     let text = 'Address        Code              Basic                   Line  Source\n';
     for (let i = 0; i < data.address.length; i++) {
-      text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i+1}     ${data.source[i]}\n`;
+        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i + 1}     ${data.source[i]}\n`;
     }
     return text;
 }
@@ -152,8 +152,8 @@ export function getFunct7(instruction: string) {
 
 }
 
-function checkInstructions(line: string[], symbolTable: Array<any>) {
-    const instruction = line[0] ? line[0] : '';
+function checkInstructions(basicLine: string[], sourceLine: string[], symbolTable: Array<any>) {
+    const instruction = sourceLine[0] ? sourceLine[0] : '';
     switch (instruction) {
         case 'add':
         case 'sub':
@@ -165,7 +165,7 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
         case 'sra':
         case 'or':
         case 'and':
-            return checkRFormatInst(line);
+            return checkRFormatInst(sourceLine);
         case 'lb':
         case 'lh':
         case 'lw':
@@ -174,7 +174,7 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
         case 'sb':
         case 'sh':
         case 'sw':
-            return checkMemFormatInst(line);
+            return checkMemFormatInst(sourceLine);
         case 'addi':
         case 'jalr':
         case 'slti':
@@ -195,19 +195,30 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
             // case 'csrrwi':
             // case 'csrrsi':
             // case 'csrrci': 
-            return checkIFormatInst(line);
+            return checkIFormatInst(sourceLine);
         case 'beq':
         case 'bne':
         case 'blt':
         case 'bge':
         case 'bltu':
         case 'bgeu':
-            return checkBFormatInst(line, symbolTable);
+
+        case "bgt":
+        case "bgtu":
+        case "ble":
+        case "bleu":
+            return checkBFormatInst(sourceLine, symbolTable);
         case 'lui':
         case 'auipc':
-            return checkUFormatInst(line);
+            return checkUFormatInst(sourceLine);
         case 'jal':
-            return checkJFormatInst(line);
+            return checkJFormatInst(sourceLine);
+        case 'nop':
+            return checkIFormatInst(basicLine);
+        case 'j':
+            return checkJFormatInst(basicLine);
+        case 'jr':
+            return checkIFormatInst(basicLine);
         default:
             return {
                 error: true,
@@ -218,10 +229,12 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
 }
 
 function verifyText(text: Text) {
-    for (const line of text.source) {
-        const res = checkInstructions(line, text.symbolTable ? text.symbolTable : []);
+    for (let i = 0; i < text.basic.length; i++) {
+        const basicLine = text.basic[i];
+        const sourceLine = text.source[i];
+        const res = checkInstructions(basicLine, sourceLine, text.symbolTable ? text.symbolTable : []);
         if (res.error) {
-            return res
+            return res;
         }
 
     }
@@ -599,7 +612,7 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
             message: `"${t2}" operand is of incorrect type`
         }
     }
-    
+
     if (!labelExist(label, symbolTable)) {
         return {
             error: true,

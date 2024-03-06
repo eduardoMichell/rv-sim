@@ -72,7 +72,7 @@ export class ButtonBarComponent implements OnDestroy {
       this.buttonService.setCanRun(true);
       this.buttonService.setCanDump(true);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-      this.utilsService.setConsole('Assemble', 'operation completed with errors.');
+      this.utilsService.setConsole('Assemble', 'operation completed without errors.');
     } else {
       this.utilsService.setConsole('Error', message);
     }
