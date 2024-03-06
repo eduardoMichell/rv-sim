@@ -145,7 +145,7 @@ function createPseudo(line: string[]) {
             break;
         default:
             basicWithPseudo = line;
-
+        // jalr li not mv sgt sgtu sh sltz snez
     }
     return {
         sourceIndex,
