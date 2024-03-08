@@ -11,7 +11,7 @@ export type Code = {
 export type Text = {
     source: Array<string[]>,
     machineCode?: Array<string>,
-    basic: Array<string[]>,
+    basic: Array<any>,
     symbolTable?: Array<any>
 }
 

@@ -173,10 +173,10 @@ export class RiscvConverter {
     return resize(result, 32);
   }
 
-  generateInstructions(text: Array<string[]>) {
+  generateInstructions(text: Array<any>) {
     const instructions = [];
     for (const line of text) {
-      instructions.push(new Instruction(line));
+      instructions.push(new Instruction(line.inst));
     }
     return instructions;
   }

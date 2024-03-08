@@ -17,12 +17,11 @@ export class ImmGen {
         const immStoreJ32 = resizeSigned(immStoreValue, 32);
         const immUpJ32 = resizeSigned(immUpJValue, 32);
         const immI32 = resizeSigned(immIValue, 32);
-
         switch (true) {
             case immShamt:
                 return binaryToDecimal(immShamt32);
             case immUp:
-                return binaryToDecimalSigned(immUp32);
+                return binaryToDecimal(immUp32);
             case memWrite:
                 return binaryToDecimalSigned(immStoreJ32);
             case jump && !jalr:

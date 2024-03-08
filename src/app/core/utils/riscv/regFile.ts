@@ -19,7 +19,7 @@ export class RegFile {
     }
 
     write(regWrite: boolean, writeRg: string, data: string) {
-        if (regWrite) {
+        if (regWrite && binaryToDecimal(writeRg) !== 0) {
             this.writeRegister('x' + binaryToDecimal(writeRg), data);
         }
     }

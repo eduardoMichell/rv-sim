@@ -10,9 +10,12 @@ export function assembly(code: Asm) {
         }
 
     }
+
+    //TODO: verifySymbolTable;
+
     // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer
     // ".ascii" directive cannot appear in text segment
-    const resText = verifyText(code.code.text);
+    const resText = verifyText(code.code.text, code.code.data || []);
     if (resText.error) {
         return resText;
     }
@@ -97,7 +100,7 @@ export function convertConfigToText(code: any, pc: number) {
     }
     let text = 'Address        Code              Basic                   Line  Source\n';
     for (let i = 0; i < data.address.length; i++) {
-      text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i+1}     ${data.source[i]}\n`;
+        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i + 1}     ${data.source[i]}\n`;
     }
     return text;
 }
@@ -149,8 +152,10 @@ export function getFunct7(instruction: string) {
 
 }
 
-function checkInstructions(line: string[], symbolTable: Array<any>) {
-    const instruction = line[0] ? line[0] : '';
+function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Array<any>, data: Data[]) {
+    const instruction = basicLine.isPseudo ? basicLine.inst[0] : sourceLine[0];
+    const line = basicLine.isPseudo ? basicLine.inst : sourceLine;
+    console.log(line,instruction)
     switch (instruction) {
         case 'add':
         case 'sub':
@@ -199,10 +204,14 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
         case 'bge':
         case 'bltu':
         case 'bgeu':
+        case "bgt":
+        case "bgtu":
+        case "ble":
+        case "bleu":
             return checkBFormatInst(line, symbolTable);
         case 'lui':
         case 'auipc':
-            return checkUFormatInst(line);
+            return checkUFormatInst(line, sourceLine, data);
         case 'jal':
             return checkJFormatInst(line);
         default:
@@ -210,15 +219,16 @@ function checkInstructions(line: string[], symbolTable: Array<any>) {
                 error: true,
                 message: `"${instruction}" is not a recognized operator`,
             }
-
     }
 }
 
-function verifyText(text: Text) {
-    for (const line of text.source) {
-        const res = checkInstructions(line, text.symbolTable ? text.symbolTable : []);
+function verifyText(text: Text, data: Data[]) {
+    for (let i = 0; i < text.basic.length; i++) {
+        const basicLine = text.basic[i];
+        const sourceLine = text.source[i];
+        const res = checkInstructions(basicLine, sourceLine, text.symbolTable ? text.symbolTable : [], data);
         if (res.error) {
-            return res
+            return res;
         }
 
     }
@@ -259,7 +269,7 @@ function checkDataElement(element: Data) {
             message: `"${element.label}" cannot have special characters`
         }
     }
-    console.log(element.directive)
+
     switch (element.directive) {
         case ".ascii":
         case ".string":
@@ -411,7 +421,6 @@ function firstElementNoString(array: string[]): any {
                 };
             }
         } else if (incompleteString !== '') {
-            console.log(array[i])
             return {
                 error: true,
                 message: `"${incompleteString.trim()}" is not a valid string`
@@ -541,8 +550,8 @@ function checkMemFormatInst(line: string[]) {
         }
     }
     const mem = line[2] ? line[2] : '';
-
-    if (!checkInstructionFormatWithParentheses(mem) || t1 === '' || line[2]) {
+    
+    if (!checkInstructionFormatWithParentheses(mem) || t1 === '' || !mem) {
         return {
             error: true,
             message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, -100(t2)`
@@ -598,13 +607,6 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
         }
     }
 
-    // if (!isValidLabel(label)) {
-    //     return {
-    //         error: true,
-    //         message: `"${label}" Invalid language element`
-    //     }
-    // }
-
     if (!labelExist(label, symbolTable)) {
         return {
             error: true,
@@ -618,10 +620,11 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
     }
 }
 
-function checkUFormatInst(line: string[]) {
+function checkUFormatInst(line: string[], loadAddressLine: string[], data: Data[]) {
     const instruction = line[0] ? line[0] : '';
     const t1 = line[1] ? line[1] : '';
     const immediate = line[2] ? line[2] : '';
+    const isLa = loadAddressLine[0] === 'la';
 
     if (t1 === '' || immediate === '' || line[3]) {
         return {
@@ -634,6 +637,15 @@ function checkUFormatInst(line: string[]) {
         return {
             error: true,
             message: `"${t1}" operand is of incorrect type`
+        }
+    }
+
+    if (isLa) {
+        if (!data.some(objeto => objeto.label === `${loadAddressLine?.[2]}:`)) {
+            return {
+                error: true,
+                message: `symbol "${loadAddressLine?.[2]}" not found in symbol table`
+            }
         }
     }
 
