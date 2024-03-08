@@ -22,7 +22,7 @@ export class CodeService {
     this.convertedCode = this.utils.initAsm();
   }
 
-  setPreviousCode(code: Asm) {
+  setPreviousCode(code: any) {
     this.previousCode.push(JSON.stringify(code));
     this.previousCode$.next(this.previousCode);
   }
@@ -33,9 +33,15 @@ export class CodeService {
   }
 
   getLastPreviousCode() {
+    console.log(this.previousCode.length)
     const element = this.previousCode.pop();
     this.previousCode$.next(this.previousCode);
+    console.log(this.previousCode.length)
     return element;
+  }
+
+  getPreviousCode() { 
+    return this.previousCode;
   }
 
   setCode(code: string) {

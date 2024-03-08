@@ -80,6 +80,7 @@ export class ButtonBarComponent implements OnDestroy {
 
   runOneStep() {
     if (!this.canExecuteInstruction()) {
+      this.codeService.setPreviousCode(this.codeService.getConvertedCode());
       const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
@@ -100,7 +101,11 @@ export class ButtonBarComponent implements OnDestroy {
   }
 
   undoLastStep() {
-    console.log("TODO");
+    if (!this.canUndoLastStep()) {
+      this.codeService.setConvertedCode((JSON.parse(this.codeService.getLastPreviousCode() || "")));
+      this.buttonService.setCanUndoLastStep(false);
+      this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+    }
   }
 
   async dumpFile() {
@@ -137,7 +142,7 @@ export class ButtonBarComponent implements OnDestroy {
 
   canUndoLastStep() {
     const convertedCode = this.codeService.getConvertedCode();
-    return convertedCode?.memories.pc === ConstantsInit.PC || this.buttonService.getCanUndoLastStep();
+    return convertedCode?.memories.pc === ConstantsInit.PC || this.buttonService.getCanUndoLastStep() || this.codeService.getPreviousCode().length === 0;
   }
 
   resetAll() {
