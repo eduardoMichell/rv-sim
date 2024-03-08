@@ -75,10 +75,10 @@ export class ExecuteComponent implements OnInit, OnDestroy {
     const visualization = [];
     for (let i = initialMemory; i < ConstantsInit.PC + (asm.code.text.basic.length * 4); i += 4) {
       const instMem = asm.memories.instMem[i];
-      if (instMem && instMem.basic && Array.isArray(instMem.basic)) {
+      if (instMem?.basic && Array.isArray(instMem?.basic?.inst)) {
         visualization.push({
           code: this.binaryToHexadecimal(instMem.code),
-          basic: instMem.basic?.join(" "),
+          basic: instMem.basic?.inst.join(" "),
           source: instMem.source?.join(" "),
           address: i
         })

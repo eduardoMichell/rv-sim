@@ -15,7 +15,7 @@ export function assembly(code: Asm) {
 
     // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer
     // ".ascii" directive cannot appear in text segment
-    const resText = verifyText(code.code.text);
+    const resText = verifyText(code.code.text, code.code.data || []);
     if (resText.error) {
         return resText;
     }
@@ -152,8 +152,10 @@ export function getFunct7(instruction: string) {
 
 }
 
-function checkInstructions(basicLine: string[], sourceLine: string[], symbolTable: Array<any>) {
-    const instruction = sourceLine[0] ? sourceLine[0] : '';
+function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Array<any>, data: Data[]) {
+    const instruction = basicLine.isPseudo ? basicLine.inst[0] : sourceLine[0];
+    const line = basicLine.isPseudo ? basicLine.inst : sourceLine;
+    console.log(line,instruction)
     switch (instruction) {
         case 'add':
         case 'sub':
@@ -165,7 +167,7 @@ function checkInstructions(basicLine: string[], sourceLine: string[], symbolTabl
         case 'sra':
         case 'or':
         case 'and':
-            return checkRFormatInst(sourceLine);
+            return checkRFormatInst(line);
         case 'lb':
         case 'lh':
         case 'lw':
@@ -174,7 +176,7 @@ function checkInstructions(basicLine: string[], sourceLine: string[], symbolTabl
         case 'sb':
         case 'sh':
         case 'sw':
-            return checkMemFormatInst(sourceLine);
+            return checkMemFormatInst(line);
         case 'addi':
         case 'jalr':
         case 'slti':
@@ -195,44 +197,36 @@ function checkInstructions(basicLine: string[], sourceLine: string[], symbolTabl
             // case 'csrrwi':
             // case 'csrrsi':
             // case 'csrrci': 
-            return checkIFormatInst(sourceLine);
+            return checkIFormatInst(line);
         case 'beq':
         case 'bne':
         case 'blt':
         case 'bge':
         case 'bltu':
         case 'bgeu':
-
         case "bgt":
         case "bgtu":
         case "ble":
         case "bleu":
-            return checkBFormatInst(sourceLine, symbolTable);
+            return checkBFormatInst(line, symbolTable);
         case 'lui':
         case 'auipc':
-            return checkUFormatInst(sourceLine);
+            return checkUFormatInst(line, sourceLine, data);
         case 'jal':
-            return checkJFormatInst(sourceLine);
-        case 'nop':
-            return checkIFormatInst(basicLine);
-        case 'j':
-            return checkJFormatInst(basicLine);
-        case 'jr':
-            return checkIFormatInst(basicLine);
+            return checkJFormatInst(line);
         default:
             return {
                 error: true,
                 message: `"${instruction}" is not a recognized operator`,
             }
-
     }
 }
 
-function verifyText(text: Text) {
+function verifyText(text: Text, data: Data[]) {
     for (let i = 0; i < text.basic.length; i++) {
         const basicLine = text.basic[i];
         const sourceLine = text.source[i];
-        const res = checkInstructions(basicLine, sourceLine, text.symbolTable ? text.symbolTable : []);
+        const res = checkInstructions(basicLine, sourceLine, text.symbolTable ? text.symbolTable : [], data);
         if (res.error) {
             return res;
         }
@@ -556,8 +550,8 @@ function checkMemFormatInst(line: string[]) {
         }
     }
     const mem = line[2] ? line[2] : '';
-
-    if (!checkInstructionFormatWithParentheses(mem) || t1 === '' || line[2]) {
+    
+    if (!checkInstructionFormatWithParentheses(mem) || t1 === '' || !mem) {
         return {
             error: true,
             message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, -100(t2)`
@@ -626,10 +620,11 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
     }
 }
 
-function checkUFormatInst(line: string[]) {
+function checkUFormatInst(line: string[], loadAddressLine: string[], data: Data[]) {
     const instruction = line[0] ? line[0] : '';
     const t1 = line[1] ? line[1] : '';
     const immediate = line[2] ? line[2] : '';
+    const isLa = loadAddressLine[0] === 'la';
 
     if (t1 === '' || immediate === '' || line[3]) {
         return {
@@ -642,6 +637,15 @@ function checkUFormatInst(line: string[]) {
         return {
             error: true,
             message: `"${t1}" operand is of incorrect type`
+        }
+    }
+
+    if (isLa) {
+        if (!data.some(objeto => objeto.label === `${loadAddressLine?.[2]}:`)) {
+            return {
+                error: true,
+                message: `symbol "${loadAddressLine?.[2]}" not found in symbol table`
+            }
         }
     }
 

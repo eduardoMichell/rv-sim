@@ -132,8 +132,8 @@ export class UtilsService {
       regFile: {
         x0: 0,
         x1: 0,
-        x2: 0,
-        x3: 0,
+        x2: 2147479548, 
+        x3: 268468224,
         x4: 0,
         x5: 0,
         x6: 0,

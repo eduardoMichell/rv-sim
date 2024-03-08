@@ -15,7 +15,8 @@ export class DataMem {
 
     readMemory(address: string, rgData2: any, memRead: boolean, memBen: any, memUsgn: any) {
         if (memRead) {
-            return this.memory[binaryToDecimal(address)];
+            console.log("this.memory[binaryToDecimal(address)]:", this.memory[binaryToDecimal(address)], address, binaryToDecimal(address))
+            return this.memory[(address)] || "0";
         }
     }
 
