@@ -2,6 +2,8 @@ export enum ConstantsInit {
   PC = 4194304,
   INST_MEM_INIT = 4194304,
   DATA_MEM_INIT = 268500992,
+  GP_MEM_INIT = 123,
+  SP_MEM_INIT = 123,
   MEM_PAGE_SIZE = 10
 }
 

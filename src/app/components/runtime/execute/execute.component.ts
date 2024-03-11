@@ -28,6 +28,14 @@ export class ExecuteComponent implements OnInit, OnDestroy {
     {
       init: ConstantsInit.INST_MEM_INIT,
       name: ".text"
+    },
+    {
+      init: ConstantsInit.SP_MEM_INIT,
+      name: "Current SP"
+    },
+    {
+      init: ConstantsInit.GP_MEM_INIT,
+      name: "Current GP"
     }
   ];
 
@@ -65,13 +73,11 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   getDataSegment() {
-    return this.createDataSegment(this.memoryType.init, this.memoryType.name,
-      this.memoryType.init + (this.page * (128 * 2)), this.page * 256);
+    return this.createDataSegment(this.memoryType.init, this.page * 256);
   }
 
   createTextSegment(initialMemory: number) {
     const asm = this.codeService.getConvertedCode();
-
     const visualization = [];
     for (let i = initialMemory; i < ConstantsInit.PC + (asm.code.text.basic.length * 4); i += 4) {
       const instMem = asm.memories.instMem[i];
@@ -87,23 +93,25 @@ export class ExecuteComponent implements OnInit, OnDestroy {
     return visualization;
   }
 
-  createDataSegment(memoryTypeNumber: number, memoryTypeName: string, initialMemory: number, sum: number) {
+  createDataSegment(memoryTypeNumber: number, sum: number) {
+    console.log(sum)
     const asm = this.codeService.getConvertedCode();
     const visualization = [];
-    for (let i = initialMemory; i < memoryTypeNumber + (128 * 4) + sum; i += 4) {
+    for (let i = memoryTypeNumber + sum; i < memoryTypeNumber + (128 * 4) + sum; i += 4) {
       visualization.push({
         address: i,
-        value0: memoryTypeName === '.data' ? asm.memories.dataMem[i] : this.binaryToNumber(asm.memories.instMem[i].code),
-        value4: memoryTypeName === '.data' ? asm.memories.dataMem[i + 4] : this.binaryToNumber(asm.memories.instMem[i + 4].code),
-        value8: memoryTypeName === '.data' ? asm.memories.dataMem[i + 8] : this.binaryToNumber(asm.memories.instMem[i + 8].code),
-        value12: memoryTypeName === '.data' ? asm.memories.dataMem[i + 12] : this.binaryToNumber(asm.memories.instMem[i + 12].code),
-        value16: memoryTypeName === '.data' ? asm.memories.dataMem[i + 16] : this.binaryToNumber(asm.memories.instMem[i + 16].code),
-        value20: memoryTypeName === '.data' ? asm.memories.dataMem[i + 20] : this.binaryToNumber(asm.memories.instMem[i + 20].code),
-        value24: memoryTypeName === '.data' ? asm.memories.dataMem[i + 24] : this.binaryToNumber(asm.memories.instMem[i + 24].code),
-        value28: memoryTypeName === '.data' ? asm.memories.dataMem[i + 28] : this.binaryToNumber(asm.memories.instMem[i + 28].code),
+        value0: asm.memories.memory?.get(i) ? asm.memories.memory.get(i) : 0,
+        value4: asm.memories.memory?.get(i + 4) ? asm.memories.memory.get(i + 4) : 0,
+        value8: asm.memories.memory?.get(i + 8) ? asm.memories.memory.get(i + 8) : 0,
+        value12: asm.memories.memory?.get(i + 12) ? asm.memories.memory.get(i + 12) : 0,
+        value16: asm.memories.memory?.get(i + 16) ? asm.memories.memory.get(i + 16) : 0,
+        value20: asm.memories.memory?.get(i + 20) ? asm.memories.memory.get(i + 20) : 0,
+        value24: asm.memories.memory?.get(i + 24) ? asm.memories.memory.get(i + 24) : 0,
+        value28: asm.memories.memory?.get(i + 28) ? asm.memories.memory.get(i + 28) : 0,
       })
       i += 28;
     }
+    console.log(visualization)
     return visualization;
   }
 
@@ -133,15 +141,11 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   previousPage() {
-    if (this.page > 0) {
       this.page--;
-    }
   }
 
   nextPage() {
-    if (this.page <= (ConstantsInit.MEM_PAGE_SIZE)) {
       this.page++;
-    }
   }
 
   selectOnChange() {

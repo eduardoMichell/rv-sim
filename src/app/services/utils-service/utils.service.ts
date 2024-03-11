@@ -165,6 +165,7 @@ export class UtilsService {
       },
       instMem: this.initInstMem(),
       dataMem: this.initDataMem(),
+      memory: new Map<number, number>(),
       pc: ConstantsInit.PC
     }
   }

@@ -26,6 +26,7 @@ export type Memories = {
     regFile: any,
     instMem: any,
     dataMem: any,
+    memory?: any,
     pc: number
 }
 
