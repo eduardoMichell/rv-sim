@@ -52,7 +52,7 @@ export class RiscV {
     runOneStep() {
         //PC
         const instruction = resize(decimalToBinary(this.memory.readMemory(this.pc.getPc(), true, null, null, null)), 32);
-        console.log("============================================")
+        console.log("============== INIT INST ==============")
         console.log("instruction:", instruction)
         //DECODE
         const {
@@ -132,8 +132,9 @@ export class RiscV {
         console.log("pcSel:",pcSel)
         const newPc = jump ? aluResult : multiplexer2x1(this.pc.plusFour(), add(this.pc.getPc(), immBranch), pcSel);
         console.log("newPc:",newPc)
-
         this.pc.setPc(newPc);
+        console.log("============== END INST ==============")
+
     }
 
     dump(type: string) {

@@ -102,7 +102,6 @@ export class ButtonBarComponent implements OnDestroy {
     if (!this.canUndoLastStep()) {
       const previous = this.codeService.getLastPreviousCode();
       if (previous) {
-        console.log(previous)
         this.codeService.setConvertedCode(previous);
         this.buttonService.setCanUndoLastStep(false);
         this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);

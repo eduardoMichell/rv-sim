@@ -1,13 +1,74 @@
 @import '/src/assets/colors';
 
 
+.card-title {
+    color: $t6;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: left;
+    padding-left: 15px;
+    background: $s3;
+    width: 100%;
+    height: 34px;
+
+}
+
+.select-title {
+    margin-top: 5px;
+    font-size: 16px;
+    font-weight: 400;
+    padding-left: 15px;
+}
+
+.dump-button {
+    width: 219px;
+    height: 34px;
+    color: $t7;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: $p3;
+    border: solid transparent;
+    border-radius: 8px;
+}
+
+.dump-button:hover{
+    background-color: $p2;
+}
+.dump-button:active{
+    background-color: $p1;
+}
+
+.cancel-button {
+    width: 152px;
+    height: 34px;
+    color: $t4;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: $s7;
+    border: solid transparent;
+    border-radius: 8px;
+}
+
+.cancel-button:hover{
+    background-color: $t6;
+}
+
+.cancel-button:active{
+    background-color: $t7;
+}
+
+
+
+
 section {
-    width: 400px;
-    height: 200px;
+    width: 424px;
+    height: 222px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow: hidden;
+    border-radius: 8px;
+    background-color: $s4;
+    color: $s7;
 }
 
 mat-form-field {
@@ -15,26 +76,36 @@ mat-form-field {
     width: 100%;
 }
 
-span {
-    font-weight: 500;
-    font-size: large;
-    padding: 5px;
-    background: #69a9d9;
-    width: 100%;
-    text-align: center;
-}
 
-.buttons{
+.buttons {
     display: flex;
     width: 100%;
     justify-content: space-around;
+    margin-top: 30px;
 }
 
-button{
+button {
     width: 150px;
     height: 30px;
     background: $s5;
     border: 1px solid black;
     color: $t7;
     border-radius: 5px;
+}
+
+select {
+    width: 95%;
+    height: 20%;
+    background-color: $s3;
+    border-radius: 6px;
+    border: 1.4px solid $s7;
+    color: $s7;
+    align-self: center;
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+select:focus {
+    outline: none;
 }

@@ -100,7 +100,7 @@ export function convertConfigToText(code: any, pc: number) {
     }
     let text = 'Address        Code              Basic                   Line  Source\n';
     for (let i = 0; i < data.address.length; i++) {
-        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i + 1}     ${data.source[i]}\n`;
+        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i].inst}${" ".repeat(24 - data.basic[i].inst.toString().length)}${i + 1}     ${data.source[i]}\n`;
     }
     return text;
 }

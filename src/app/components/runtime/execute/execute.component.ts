@@ -17,7 +17,6 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   private buttonSubscription: Subscription;
 
   page: number = 0;
-  MEM_PAGE_SIZE: number = ConstantsInit.MEM_PAGE_SIZE;
   PC_START: number = ConstantsInit.PC;
   rowIndex: number = 0;
   memoryTypes = [
@@ -26,17 +25,22 @@ export class ExecuteComponent implements OnInit, OnDestroy {
       name: ".data"
     },
     {
-      init: ConstantsInit.INST_MEM_INIT,
-      name: ".text"
-    },
-    {
-      init: ConstantsInit.SP_MEM_INIT,
-      name: "Current SP"
+      init: ConstantsInit.HEAP_MEM_INIT,
+      name: "heap"
     },
     {
       init: ConstantsInit.GP_MEM_INIT,
-      name: "Current GP"
-    }
+      name: "gp"
+    },
+    {
+      init: ConstantsInit.SP_MEM_INIT,
+      name: "sp"
+    },
+    {
+      init: ConstantsInit.INST_MEM_INIT,
+      name: ".text"
+    },
+
   ];
 
   memoryType = this.memoryTypes[0];
@@ -91,7 +95,7 @@ export class ExecuteComponent implements OnInit, OnDestroy {
           source: source?.join(" "),
           address: pc
         })
-        pc+=4;
+        pc += 4;
       }
     }
     return visualization;
@@ -143,11 +147,11 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   previousPage() {
-      this.page--;
+    this.page--;
   }
 
   nextPage() {
-      this.page++;
+    this.page++;
   }
 
   selectOnChange() {

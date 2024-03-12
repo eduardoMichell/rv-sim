@@ -11,7 +11,7 @@ export class HelpDialogComponent {
     public dialogRef: MatDialogRef<HelpDialogComponent>) {
   }
 
-  closeDialog(){
+  closeDialog() {
     this.dialogRef.close();
   }
 }
