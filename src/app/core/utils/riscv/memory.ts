@@ -10,7 +10,7 @@ export class Memory {
     }
     writeMemory(address: number, data: Data[], memWrite: boolean) {
         if (memWrite) {
-            this.memory[address] = data;
+            this.memory.set(address, data);
         }
     }
 

@@ -124,7 +124,7 @@ export class RiscV {
         console.log("aluZero:",aluZero)
         console.log("aluResult:",aluResult)
         // MEM ACCESS
-        this.dataMem.writeMemory(aluResult, rgData2, memWrite)
+        this.memory.writeMemory(aluResult, rgData2, memWrite)
         const dataMemData = this.memory.readMemory(aluResult, memRead, rgData2, memBen, memUsgn);
         console.log("dataMemData:",dataMemData)
 

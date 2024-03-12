@@ -80,11 +80,12 @@ export class ButtonBarComponent implements OnDestroy {
 
   runOneStep() {
     if (!this.canExecuteInstruction()) {
-      this.codeService.setPreviousCode(this.codeService.getConvertedCode());
       const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+      this.codeService.setPreviousCode(this.utilsService.createAsmObject(data));
+
     } else {
       this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
     }
@@ -102,6 +103,7 @@ export class ButtonBarComponent implements OnDestroy {
 
   undoLastStep() {
     if (!this.canUndoLastStep()) {
+      console.log((JSON.parse(this.codeService.getLastPreviousCode() || "")))
       this.codeService.setConvertedCode((JSON.parse(this.codeService.getLastPreviousCode() || "")));
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
