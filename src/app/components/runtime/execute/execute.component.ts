@@ -94,14 +94,12 @@ export class ExecuteComponent implements OnInit, OnDestroy {
         pc+=4;
       }
     }
-    console.log(visualization)
     return visualization;
   }
 
   createDataSegment(memoryTypeNumber: number, sum: number) {
     const asm = this.codeService.getConvertedCode();
     const visualization = [];
-    console.log(asm)
     for (let i = memoryTypeNumber + sum; i < memoryTypeNumber + (128 * 4) + sum; i += 4) {
       visualization.push({
         address: i,

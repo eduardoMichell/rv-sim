@@ -13,8 +13,8 @@ export class CodeService {
   private convertedCode: Asm;
   convertedCode$ = new Subject<Asm>();
 
-  private previousCode: Array<string>;
-  previousCode$ = new Subject<Array<string>>();
+  private previousCode: Array<Asm>;
+  previousCode$ = new Subject<Array<Asm>>();
 
   constructor(private utils: UtilsService) {
     this.code = '.data\n\n.text\n';
@@ -22,8 +22,9 @@ export class CodeService {
     this.convertedCode = this.utils.initAsm();
   }
 
-  setPreviousCode(code: any) {
-    this.previousCode.push(JSON.stringify(code));
+  setPreviousCode(code: Asm) {
+    console.log(code)
+    this.previousCode.push(code);
     this.previousCode$.next(this.previousCode);
   }
 
@@ -33,14 +34,13 @@ export class CodeService {
   }
 
   getLastPreviousCode() {
-    console.log(this.previousCode.length)
+    console.log(this.previousCode)
     const element = this.previousCode.pop();
     this.previousCode$.next(this.previousCode);
-    console.log(this.previousCode.length)
     return element;
   }
 
-  getPreviousCode() { 
+  getPreviousCode() {
     return this.previousCode;
   }
 
@@ -60,5 +60,9 @@ export class CodeService {
 
   getConvertedCode() {
     return this.convertedCode;
+  }
+
+  getConvertedCodeObs() {
+     this.convertedCode$.subscribe(res => console.log(res));
   }
 }

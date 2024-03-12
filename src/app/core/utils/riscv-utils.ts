@@ -155,7 +155,6 @@ export function getFunct7(instruction: string) {
 function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Array<any>, data: Data[]) {
     const instruction = basicLine.isPseudo ? basicLine.inst[0] : sourceLine[0];
     const line = basicLine.isPseudo ? basicLine.inst : sourceLine;
-    console.log(line,instruction)
     switch (instruction) {
         case 'add':
         case 'sub':

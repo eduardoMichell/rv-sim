@@ -1,7 +1,5 @@
 import { RiscvConverter } from './riscvConverter';
 import { RegFile } from './regFile';
-import { InstMem } from './instMem';
-import { DataMem } from './dataMem';
 import { Memory } from './memory';
 import { Control } from './control';
 import { ALU } from './alu';
@@ -33,20 +31,16 @@ import {
 export class RiscV {
     code: Code
     regFile: RegFile;
-    instMem: InstMem;
     memory: Memory;
-    dataMem: DataMem;
     alu: ALU;
     pc: PC;
     immGen: ImmGen;
     control: Control;
     constructor(asm: any) {
         const { code, memories } = asm;
-        const { instMem, regFile, pc, dataMem, memory } = memories;
+        const { regFile, pc, memory } = memories;
         this.code = new RiscvConverter(code);
         this.regFile = new RegFile(regFile);
-        this.instMem = new InstMem(instMem, this.code.text);
-        this.dataMem = new DataMem(dataMem, this.code.data || []);
         this.alu = new ALU();
         this.memory = new Memory(memory, this.code);
 

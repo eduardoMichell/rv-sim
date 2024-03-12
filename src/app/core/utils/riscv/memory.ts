@@ -37,7 +37,6 @@ export class Memory {
         for (let i = 0; i < totalOfInstruction; i++) {
             memory.set(instMemInit + i * 4, binaryToDecimal(text.machineCode?.[i] || "") || 0)
         }
-        console.log(memory)
         return memory;
     }
 

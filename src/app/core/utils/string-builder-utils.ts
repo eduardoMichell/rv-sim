@@ -24,7 +24,6 @@ export function createText(code: string): Text {
 
     const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
     const text = verifyPseudoInstructions(newSource, basic);
-    console.log(text)
     return {
         source: text.newSouce,
         basic: text.newBasic,

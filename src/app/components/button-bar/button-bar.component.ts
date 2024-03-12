@@ -28,7 +28,7 @@ export class ButtonBarComponent implements OnDestroy {
 
   currentTabIndex: number = 0;
 
-  previousCode: string
+  previousCode: Asm | null;
 
   constructor(
     private riscvService: RiscvService,
@@ -39,9 +39,7 @@ export class ButtonBarComponent implements OnDestroy {
     public dialog: MatDialog) {
     this.code = this.codeService.getCode();
     this.convertedCode = this.utilsService.initAsm();
-
-    this.previousCode = this.codeService.getLastPreviousCode() || '';
-
+    this.previousCode = this.codeService.getLastPreviousCode() || null;
     this.codeSubscription = combineLatest([this.codeService.convertedCode$, this.codeService.code$]).subscribe(([convertedCode, code]) => {
       this.convertedCode = convertedCode;
       if (code != "") {
@@ -80,12 +78,11 @@ export class ButtonBarComponent implements OnDestroy {
 
   runOneStep() {
     if (!this.canExecuteInstruction()) {
+      this.codeService.setPreviousCode(this.codeService.getConvertedCode());
       const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-      this.codeService.setPreviousCode(this.utilsService.createAsmObject(data));
-
     } else {
       this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
     }
@@ -103,10 +100,13 @@ export class ButtonBarComponent implements OnDestroy {
 
   undoLastStep() {
     if (!this.canUndoLastStep()) {
-      console.log((JSON.parse(this.codeService.getLastPreviousCode() || "")))
-      this.codeService.setConvertedCode((JSON.parse(this.codeService.getLastPreviousCode() || "")));
-      this.buttonService.setCanUndoLastStep(false);
-      this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+      const previous = this.codeService.getLastPreviousCode();
+      if (previous) {
+        console.log(previous)
+        this.codeService.setConvertedCode(previous);
+        this.buttonService.setCanUndoLastStep(false);
+        this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+      }
     }
   }
 
@@ -162,7 +162,7 @@ export class ButtonBarComponent implements OnDestroy {
   }
 
   canExecuteInstruction(): boolean {
-    return !this.buttonService.getCanRun() || this.isEnd()
+    return !this.buttonService.getCanRun() || this.isEnd();
   }
 
   isEnd() {
