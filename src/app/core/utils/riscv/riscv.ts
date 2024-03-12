@@ -2,6 +2,7 @@ import { RiscvConverter } from './riscvConverter';
 import { RegFile } from './regFile';
 import { InstMem } from './instMem';
 import { DataMem } from './dataMem';
+import { Memory } from './memory';
 import { Control } from './control';
 import { ALU } from './alu';
 import { PC } from './pc';
@@ -18,7 +19,9 @@ import {
     getFunct3,
     getFunct7,
     resizeSigned,
-    binaryToDecimalSigned
+    binaryToDecimalSigned,
+    decimalToBinary,
+    resize
 } from '../riscv-utils';
 
 
@@ -31,6 +34,7 @@ export class RiscV {
     code: Code
     regFile: RegFile;
     instMem: InstMem;
+    memory: Memory;
     dataMem: DataMem;
     alu: ALU;
     pc: PC;
@@ -38,12 +42,13 @@ export class RiscV {
     control: Control;
     constructor(asm: any) {
         const { code, memories } = asm;
-        const { instMem, regFile, pc, dataMem } = memories;
+        const { instMem, regFile, pc, dataMem, memory } = memories;
         this.code = new RiscvConverter(code);
         this.regFile = new RegFile(regFile);
         this.instMem = new InstMem(instMem, this.code.text);
         this.dataMem = new DataMem(dataMem, this.code.data || []);
         this.alu = new ALU();
+        this.memory = new Memory(memory, this.code);
 
         this.pc = new PC(pc);
         this.immGen = new ImmGen();
@@ -52,7 +57,7 @@ export class RiscV {
 
     runOneStep() {
         //PC
-        const instruction = this.instMem.readInstruction(this.pc.getPc()).code;
+        const instruction = resize(decimalToBinary(this.memory.readMemory(this.pc.getPc(), true, null, null, null)), 32);
         console.log("============================================")
         console.log("instruction:", instruction)
         //DECODE
@@ -120,7 +125,7 @@ export class RiscV {
         console.log("aluResult:",aluResult)
         // MEM ACCESS
         this.dataMem.writeMemory(aluResult, rgData2, memWrite)
-        const dataMemData = this.dataMem.readMemory(aluResult, rgData2, memRead, memBen, memUsgn);
+        const dataMemData = this.memory.readMemory(aluResult, memRead, rgData2, memBen, memUsgn);
         console.log("dataMemData:",dataMemData)
 
         // WRITEBACK

@@ -79,39 +79,42 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   createTextSegment(initialMemory: number) {
     const asm = this.codeService.getConvertedCode();
     const visualization = [];
-    for (let i = initialMemory; i < ConstantsInit.PC + (asm.code.text.basic.length * 4); i += 4) {
-      const instMem = asm.memories.instMem[i];
-      if (instMem?.basic && Array.isArray(instMem?.basic?.inst)) {
+    let pc = initialMemory;
+    for (let i = 0; i < asm.code.text.basic.length; i++) {
+      const source = asm.code.text.source[i];
+      const basic = asm.code.text.basic[i];
+      const machineCode = asm.code.text.machineCode?.[i] || "";
+      if (basic && Array.isArray(basic.inst)) {
         visualization.push({
-          code: this.binaryToHexadecimal(instMem.code),
-          basic: instMem.basic?.inst.join(" "),
-          source: instMem.source?.join(" "),
-          address: i
+          code: this.binaryToHexadecimal(machineCode),
+          basic: basic?.inst.join(" "),
+          source: source?.join(" "),
+          address: pc
         })
+        pc+=4;
       }
     }
+    console.log(visualization)
     return visualization;
   }
 
   createDataSegment(memoryTypeNumber: number, sum: number) {
-    console.log(sum)
     const asm = this.codeService.getConvertedCode();
     const visualization = [];
     for (let i = memoryTypeNumber + sum; i < memoryTypeNumber + (128 * 4) + sum; i += 4) {
       visualization.push({
         address: i,
-        value0: asm.memories.memory?.get(i) ? asm.memories.memory.get(i) : 0,
-        value4: asm.memories.memory?.get(i + 4) ? asm.memories.memory.get(i + 4) : 0,
-        value8: asm.memories.memory?.get(i + 8) ? asm.memories.memory.get(i + 8) : 0,
-        value12: asm.memories.memory?.get(i + 12) ? asm.memories.memory.get(i + 12) : 0,
-        value16: asm.memories.memory?.get(i + 16) ? asm.memories.memory.get(i + 16) : 0,
-        value20: asm.memories.memory?.get(i + 20) ? asm.memories.memory.get(i + 20) : 0,
-        value24: asm.memories.memory?.get(i + 24) ? asm.memories.memory.get(i + 24) : 0,
-        value28: asm.memories.memory?.get(i + 28) ? asm.memories.memory.get(i + 28) : 0,
+        value0: asm.memories?.memory?.get(i) ? asm.memories.memory.get(i) : 0,
+        value4: asm.memories?.memory?.get(i + 4) ? asm.memories.memory.get(i + 4) : 0,
+        value8: asm.memories?.memory?.get(i + 8) ? asm.memories.memory.get(i + 8) : 0,
+        value12: asm.memories?.memory?.get(i + 12) ? asm.memories.memory.get(i + 12) : 0,
+        value16: asm.memories?.memory?.get(i + 16) ? asm.memories.memory.get(i + 16) : 0,
+        value20: asm.memories?.memory?.get(i + 20) ? asm.memories.memory.get(i + 20) : 0,
+        value24: asm.memories?.memory?.get(i + 24) ? asm.memories.memory.get(i + 24) : 0,
+        value28: asm.memories?.memory?.get(i + 28) ? asm.memories.memory.get(i + 28) : 0,
       })
       i += 28;
     }
-    console.log(visualization)
     return visualization;
   }
 

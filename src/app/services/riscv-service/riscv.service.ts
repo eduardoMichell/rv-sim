@@ -13,11 +13,13 @@ export class RiscvService {
       code: riscv.code,
       memories: {
         regFile: riscv.regFile.registers,
+        memory: riscv.memory.memory,
         instMem: riscv.instMem.memory,
         dataMem: riscv.dataMem.memory,
         pc: riscv.pc.getPc()
       }
     }
+    console.log(result)
     return { error: false, data: result, message: 'Success' };
   }
 
@@ -30,6 +32,7 @@ export class RiscvService {
       memories: {
         regFile: riscv.regFile.registers,
         instMem: riscv.instMem.memory,
+        memory: riscv.memory.memory,
         dataMem: riscv.dataMem.memory,
         pc: riscv.pc.getPc()
       }
