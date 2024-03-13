@@ -1,13 +1,43 @@
 @import '/src/assets/colors';
 
 
+.card-title {
+    color: $t6;
+    font-size: 16px;
+    padding-left: 15px;
+    background: $s3;
+    margin: 0;
+    text-align: center;
+}
+
+.close-button {
+    width: 115px;
+    height: 34px;
+    color: $t4;
+    font-size: 18px;
+    font-weight: 600;
+    background-color: $s7;
+    border: solid transparent;
+    border-radius: 8px;
+}
+
+.close-button:hover {
+    background-color: $t6;
+}
+
+.close-button:active {
+    background-color: $t7;
+}
+
 section {
-    width: 400px;
-    height: 200px;
+    width: 825px;
+    height: 550px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow: hidden;
+    border-radius: 8px;
+    background-color: $s4;
+    color: $s7;
 }
 
 mat-form-field {
@@ -15,26 +45,63 @@ mat-form-field {
     width: 100%;
 }
 
-span {
-    font-weight: 500;
-    font-size: large;
-    padding: 5px;
-    background: #69a9d9;
-    width: 100%;
-    text-align: center;
-}
 
-.buttons{
+.buttons {
+    height: 50px;
     display: flex;
     width: 100%;
-    justify-content: space-around;
+    align-items: center;
+    justify-content: center;
 }
 
-button{
+button {
     width: 150px;
     height: 30px;
     background: $s5;
     border: 1px solid black;
     color: $t7;
     border-radius: 5px;
+}
+
+.help-tabs {
+    width: 100%;
+    background-color: $s2;
+    min-width: 300px;
+    height: 100%;
+    color: $t6;
+    border-radius: 5px;
+    --mdc-secondary-navigation-tab-container-height: 30px !important
+}
+
+.dialog-content .mat-mdc-tab-group,
+.dialog-content .mat-mdc-tab-nav-bar {
+    --mdc-tab-indicator-active-indicator-color: #e25c1d;
+    --mat-tab-header-active-focus-indicator-color: #e25c1d;
+    --mat-tab-header-active-hover-indicator-color: #e25c1d;
+    --mat-tab-header-active-label-text-color: $t6;
+    --mat-tab-header-active-focus-label-text-color: $t6;
+    --mat-tab-header-active-hover-label-text-color: $t6;
+    --mat-tab-header-inactive-label-text-color: $t6;
+    --mat-tab-header-pagination-icon-color: $t6;
+    --mat-tab-header-inactive-focus-label-text-color: $t6;
+    --mat-tab-header-inactive-hover-label-text-color: $t6;
+    --mat-tab-header-active-ripple-color: transparent;
+    --mat-tab-header-inactive-ripple-color: transparent;
+
+}
+
+.line-space {
+    padding: 8px;
+}
+
+.table {
+    width: 100%;
+    border: 0;
+    margin-top: 10px;
+}
+
+hr {
+    margin: 0;
+    background: rgba(58, 58, 58, 1);
+    border: 1px solid rgba(58, 58, 58, 1);
 }

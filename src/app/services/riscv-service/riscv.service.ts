@@ -13,8 +13,7 @@ export class RiscvService {
       code: riscv.code,
       memories: {
         regFile: riscv.regFile.registers,
-        instMem: riscv.instMem.memory,
-        dataMem: riscv.dataMem.memory,
+        memory: riscv.memory.memory,
         pc: riscv.pc.getPc()
       }
     }
@@ -29,8 +28,7 @@ export class RiscvService {
       code: riscv.code,
       memories: {
         regFile: riscv.regFile.registers,
-        instMem: riscv.instMem.memory,
-        dataMem: riscv.dataMem.memory,
+        memory: riscv.memory.memory,
         pc: riscv.pc.getPc()
       }
     }

@@ -163,34 +163,9 @@ export class UtilsService {
         x30: 0,
         x31: 0
       },
-      instMem: this.initInstMem(),
-      dataMem: this.initDataMem(),
+      memory: new Map<any, number>(),
       pc: ConstantsInit.PC
     }
-  }
-
-  initInstMem() {
-    let firstPosition = ConstantsInit.INST_MEM_INIT;
-    let instMem: any = {};
-    for (let i = 0; i < 77 * ConstantsInit.MEM_PAGE_SIZE; i++) {
-      instMem[`${firstPosition}`] = {
-        "code": "0",
-        "basic": "",
-        "source": ""
-      };
-      firstPosition += 4;
-    }
-    return instMem;
-  }
-
-  initDataMem() {
-    let firstPosition = ConstantsInit.DATA_MEM_INIT;
-    let dataMem: any = {};
-    for (let i = 0; i < 77 * ConstantsInit.MEM_PAGE_SIZE; i++) {
-      dataMem[`${firstPosition}`] = 0;
-      firstPosition += 4;
-    }
-    return dataMem;
   }
 
   createAsmObject(asm: Asm) {

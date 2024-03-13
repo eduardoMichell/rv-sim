@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Asm } from 'src/app/core/utils/types';
 import { UtilsService } from '../utils-service/utils.service';
+import { cloneDeep } from 'lodash'; 
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +14,8 @@ export class CodeService {
   private convertedCode: Asm;
   convertedCode$ = new Subject<Asm>();
 
-  private previousCode: Array<string>;
-  previousCode$ = new Subject<Array<string>>();
+  private previousCode: Array<Asm>;
+  previousCode$ = new Subject<Array<Asm>>();
 
   constructor(private utils: UtilsService) {
     this.code = '.data\n\n.text\n';
@@ -22,8 +23,8 @@ export class CodeService {
     this.convertedCode = this.utils.initAsm();
   }
 
-  setPreviousCode(code: any) {
-    this.previousCode.push(JSON.stringify(code));
+  setPreviousCode(code: Asm) {
+    this.previousCode.push(cloneDeep(code));
     this.previousCode$.next(this.previousCode);
   }
 
@@ -33,14 +34,12 @@ export class CodeService {
   }
 
   getLastPreviousCode() {
-    console.log(this.previousCode.length)
     const element = this.previousCode.pop();
     this.previousCode$.next(this.previousCode);
-    console.log(this.previousCode.length)
     return element;
   }
 
-  getPreviousCode() { 
+  getPreviousCode() {
     return this.previousCode;
   }
 

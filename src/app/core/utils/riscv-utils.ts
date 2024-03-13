@@ -12,9 +12,7 @@ export function assembly(code: Asm) {
     }
 
     //TODO: verifySymbolTable;
-
-    // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer
-    // ".ascii" directive cannot appear in text segment
+    //TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer (".ascii" directive cannot appear in text segment)
     const resText = verifyText(code.code.text, code.code.data || []);
     if (resText.error) {
         return resText;
@@ -100,7 +98,7 @@ export function convertConfigToText(code: any, pc: number) {
     }
     let text = 'Address        Code              Basic                   Line  Source\n';
     for (let i = 0; i < data.address.length; i++) {
-        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i]}${" ".repeat(24 - data.basic[i].toString().length)}${i + 1}     ${data.source[i]}\n`;
+        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i].inst}${" ".repeat(24 - data.basic[i].inst.toString().length)}${i + 1}     ${data.source[i]}\n`;
     }
     return text;
 }
@@ -155,7 +153,6 @@ export function getFunct7(instruction: string) {
 function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Array<any>, data: Data[]) {
     const instruction = basicLine.isPseudo ? basicLine.inst[0] : sourceLine[0];
     const line = basicLine.isPseudo ? basicLine.inst : sourceLine;
-    console.log(line,instruction)
     switch (instruction) {
         case 'add':
         case 'sub':

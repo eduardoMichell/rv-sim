@@ -24,7 +24,6 @@ export function createText(code: string): Text {
 
     const basic: Array<string[]> = convertTextBasicLabels(createTextBasic(newSource), symbolTable);
     const text = verifyPseudoInstructions(newSource, basic);
-    console.log(text)
     return {
         source: text.newSouce,
         basic: text.newBasic,
@@ -150,7 +149,7 @@ function createPseudo(line: string[], newBasic: Array<string[]>) {
         case "lh":
         case "lhu":
             basicWithPseudo = converLoadHalfWord(line);
-            break;
+            break; 
         case "lw":
             basicWithPseudo = converLoadWord(line);
             break;

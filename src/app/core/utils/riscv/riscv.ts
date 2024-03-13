@@ -1,7 +1,6 @@
 import { RiscvConverter } from './riscvConverter';
 import { RegFile } from './regFile';
-import { InstMem } from './instMem';
-import { DataMem } from './dataMem';
+import { Memory } from './memory';
 import { Control } from './control';
 import { ALU } from './alu';
 import { PC } from './pc';
@@ -18,32 +17,26 @@ import {
     getFunct3,
     getFunct7,
     resizeSigned,
-    binaryToDecimalSigned
+    binaryToDecimalSigned,
+    decimalToBinary,
+    resize
 } from '../riscv-utils';
-
-
-//TODO: VERIFICAR A QUANTIDADE E FORMATO DA SAIDA DA ALU, PC, REGFILE, ETC
-// VERIFICAR O FORMATO DE TODOS PARAMETROS, STRING OU NUMBER
-// FAZER O OTHER '0' PARA SAIDAS DE TODAS FUNCOES
-
 
 export class RiscV {
     code: Code
     regFile: RegFile;
-    instMem: InstMem;
-    dataMem: DataMem;
+    memory: Memory;
     alu: ALU;
     pc: PC;
     immGen: ImmGen;
     control: Control;
     constructor(asm: any) {
         const { code, memories } = asm;
-        const { instMem, regFile, pc, dataMem } = memories;
+        const { regFile, pc, memory } = memories;
         this.code = new RiscvConverter(code);
         this.regFile = new RegFile(regFile);
-        this.instMem = new InstMem(instMem, this.code.text);
-        this.dataMem = new DataMem(dataMem, this.code.data || []);
         this.alu = new ALU();
+        this.memory = new Memory(memory, this.code);
 
         this.pc = new PC(pc);
         this.immGen = new ImmGen();
@@ -52,8 +45,8 @@ export class RiscV {
 
     runOneStep() {
         //PC
-        const instruction = this.instMem.readInstruction(this.pc.getPc()).code;
-        console.log("============================================")
+        const instruction = resize(decimalToBinary(this.memory.readMemory(this.pc.getPc(), true, null, null, null)), 32);
+        console.log("============== INIT INST ==============")
         console.log("instruction:", instruction)
         //DECODE
         const {
@@ -119,8 +112,8 @@ export class RiscV {
         console.log("aluZero:",aluZero)
         console.log("aluResult:",aluResult)
         // MEM ACCESS
-        this.dataMem.writeMemory(aluResult, rgData2, memWrite)
-        const dataMemData = this.dataMem.readMemory(aluResult, rgData2, memRead, memBen, memUsgn);
+        this.memory.writeMemory(aluResult, rgData2, memWrite)
+        const dataMemData = this.memory.readMemory(aluResult, memRead, rgData2, memBen, memUsgn);
         console.log("dataMemData:",dataMemData)
 
         // WRITEBACK
@@ -133,8 +126,9 @@ export class RiscV {
         console.log("pcSel:",pcSel)
         const newPc = jump ? aluResult : multiplexer2x1(this.pc.plusFour(), add(this.pc.getPc(), immBranch), pcSel);
         console.log("newPc:",newPc)
-
         this.pc.setPc(newPc);
+        console.log("============== END INST ==============")
+
     }
 
     dump(type: string) {

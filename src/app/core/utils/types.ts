@@ -24,8 +24,7 @@ export type Data = {
 
 export type Memories = {
     regFile: any,
-    instMem: any,
-    dataMem: any,
+    memory: any,
     pc: number
 }
 

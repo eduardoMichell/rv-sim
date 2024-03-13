@@ -1,12 +1,83 @@
-<section>
-    <span>Help</span>
-    <mat-form-field>
-        <mat-label>Help</mat-label>
-        
-    </mat-form-field>
+<section class="dialog-content">
+  <h2 class="card-title">Help</h2>
+  <mat-tab-group class="help-tabs dialog-content" animationDuration="0ms" style="max-height: 470px;">
+    <!-- <mat-tab label="Overview">
+        <div class="overview">
 
-    <div class="buttons">
-        
-        <button (click)="closeDialog()">Close</button>
-    </div>
+        </div> 
+    </mat-tab> -->
+    <mat-tab label="Operands">
+      <table class="table">
+        <tbody>
+          <ng-container *ngFor="let row of operands; let last = last">
+            <tr>
+              <td style="width: 200px;">{{ row.name }}</td>
+              <td style="text-align: left;">{{ row.desc }}</td>
+            </tr>
+            <tr *ngIf="!last">
+              <td colspan="9" class="line-space">
+                <hr>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Basic Instructions">
+      <table class="table">
+        <tbody>
+          <ng-container *ngFor="let row of basicInstructions; let last = last">
+            <tr>
+              <td style="width: 150px;">{{ row.name }}</td>
+              <td style="text-align: left;">{{ row.desc }}</td>
+            </tr>
+            <tr *ngIf="!last">
+              <td colspan="9" class="line-space">
+                <hr>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Pseudo Instructions">
+      <table class="table">
+        <tbody>
+          <ng-container *ngFor="let row of pseudoInstructions; let last = last">
+            <tr>
+              <td style="width: 150px;">{{ row.name }}</td>
+              <td style="text-align: left;">{{ row.desc }}</td>
+            </tr>
+            <tr *ngIf="!last">
+              <td colspan="9" class="line-space">
+                <hr>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Directives">
+      <table class="table">
+        <tbody>
+          <ng-container *ngFor="let row of directives; let last = last">
+            <tr>
+              <td style="width: 150px;">{{ row.name }}</td>
+              <td style="text-align: left;">{{ row.desc }}</td>
+            </tr>
+            <tr *ngIf="!last">
+              <td colspan="9" class="line-space">
+                <hr>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-tab>
+
+  </mat-tab-group>
+
+  <div class="buttons">
+    <button (click)="closeDialog()" class="close-button">Close</button>
+  </div>
 </section>
