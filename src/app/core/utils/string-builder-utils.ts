@@ -149,7 +149,7 @@ function createPseudo(line: string[], newBasic: Array<string[]>) {
         case "lh":
         case "lhu":
             basicWithPseudo = converLoadHalfWord(line);
-            break;
+            break; 
         case "lw":
             basicWithPseudo = converLoadWord(line);
             break;

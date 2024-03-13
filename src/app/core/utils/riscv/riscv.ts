@@ -22,12 +22,6 @@ import {
     resize
 } from '../riscv-utils';
 
-
-//TODO: VERIFICAR A QUANTIDADE E FORMATO DA SAIDA DA ALU, PC, REGFILE, ETC
-// VERIFICAR O FORMATO DE TODOS PARAMETROS, STRING OU NUMBER
-// FAZER O OTHER '0' PARA SAIDAS DE TODAS FUNCOES
-
-
 export class RiscV {
     code: Code
     regFile: RegFile;

@@ -12,9 +12,7 @@ export function assembly(code: Asm) {
     }
 
     //TODO: verifySymbolTable;
-
-    // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer
-    // ".ascii" directive cannot appear in text segment
+    //TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer (".ascii" directive cannot appear in text segment)
     const resText = verifyText(code.code.text, code.code.data || []);
     if (resText.error) {
         return resText;

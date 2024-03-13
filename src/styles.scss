@@ -34,7 +34,12 @@ html {
   border-radius: 5px;
 }
  
-
 .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 8px !important;
+}
+
+.dialog-content mat-tab-header {
+  &.mat-mdc-tab-header {
+      --mdc-secondary-navigation-tab-container-height: 35px !important
+  }
 }
