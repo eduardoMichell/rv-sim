@@ -15,7 +15,7 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
 export class ExecuteComponent implements OnInit, OnDestroy {
   private runtimeSubscription: Subscription;
   private buttonSubscription: Subscription;
-
+  control: number = 0;
   page: number = 0;
   PC_START: number = ConstantsInit.PC;
   rowIndex: number = 0;
@@ -40,7 +40,6 @@ export class ExecuteComponent implements OnInit, OnDestroy {
       init: ConstantsInit.INST_MEM_INIT,
       name: ".text"
     },
-
   ];
 
   memoryType = this.memoryTypes[0];
@@ -104,6 +103,7 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   createDataSegment(memoryTypeNumber: number, sum: number) {
     const asm = this.codeService.getConvertedCode();
     const visualization = [];
+    this.control = memoryTypeNumber + sum;
     for (let i = memoryTypeNumber + sum; i < memoryTypeNumber + (128 * 4) + sum; i += 4) {
       visualization.push({
         address: i,
@@ -147,15 +147,21 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   previousPage() {
-    this.page--;
+    console.log(this.control)
+    if(this.control > 0) {
+      this.page--;
+    }
   }
 
   nextPage() {
-    this.page++;
+    if(this.control < 4294966784) {
+      this.page++;
+    }
   }
 
   selectOnChange() {
     this.page = 0;
+    this.control = this.memoryType.init;
   }
 
   scrollToSelectedRow(number: number) {

@@ -75,10 +75,10 @@
   </div>
   <div class="container-bottom">
     <div class="buttons">
-      <button [disabled]="!canRun()" matTooltip="View next higher address range"
+      <button [disabled]="!canRun() || control <= 0" matTooltip="View next higher address range"
         (click)="previousPage()" class="next-back-buttons">
         <mat-icon><img class="logo" src="assets/icons/back.svg"></mat-icon></button>
-      <button [disabled]="!canRun()" matTooltip="View next lower address range"
+      <button [disabled]="!canRun() || control >= 4294966784" matTooltip="View next lower address range"
         (click)="nextPage()" class="next-back-buttons">
         <mat-icon><img class="logo" src="assets/icons/next.svg"></mat-icon></button>
     </div>
