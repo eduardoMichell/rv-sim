@@ -7,6 +7,6 @@ This project is a RISC-V processor implemented in JavaScript, allowing the execu
 
 <p align="center">
 	<br><br>
-	<b>  <a href="https://www.patreon.com/eduardomichell">Donate</a> Me! </b>
+	<b>  <a href="https://www.patreon.com/eduardomichell">Support</a> Me! </b>
 </p>
 <br>
