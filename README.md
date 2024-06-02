@@ -5,8 +5,4 @@
 
 This project is a RISC-V processor implemented in JavaScript, allowing the execution of RISC-V assembly code from the RV32I instruction set. It was developed with the aim of providing an affordable implementation, allowing students, enthusiasts and developers to experiment and learn about this popular processor architecture.
 
-<p align="center">
-	<br><br>
-	<b>  <a href="https://www.patreon.com/eduardomichell">Support</a> Me! </b>
-</p>
-<br>
+ 
