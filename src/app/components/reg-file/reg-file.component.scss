@@ -1,10 +1,10 @@
 @import '/src/assets/colors';
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
 
 .card {
   background-color: $s1;
   max-height: 654px;
   margin-left: 10px;
-  flex-basis: 1;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -12,7 +12,7 @@
   color: $t6;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 8px;
-  min-width: 300px;
+  min-width: 235px;
   font-size: 16px;
 }
 
@@ -47,6 +47,7 @@ th {
   top: 0;
   z-index: 2;
   vertical-align: middle;
+  padding-right: 4px;
 }
 
 tbody {
@@ -65,7 +66,13 @@ tr {
 td {
   width: 33%;
   box-sizing: border-box;
+  font-family: 'Courier New', Courier, monospace; 
 }
+
+td:last-child, th:last-child{
+  padding-right: 20px; 
+}
+ 
 
 hr {
   margin: 0;
