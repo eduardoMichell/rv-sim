@@ -1,33 +1,60 @@
 <div class="button-bar">
       <div class="button-card">
             <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
-            <button (click)="fileInput.click()" matTooltip="Open File"><mat-icon><img class="logo"
-                              src="assets/icons/open-archive.svg"></mat-icon></button>
 
-            <button (click)="downloadFile()" matTooltip="Download File"><mat-icon><img class="logo"
-                              src="assets/icons/download-archive.svg"></mat-icon></button>
+            <button (click)="fileInput.click()" matTooltip="Open File">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/open-archive.svg">
+                  </mat-icon>
+            </button>
 
-            <button (click)="dumpFile()" style="margin-right: 40px;" [disabled]="!getCanDump()"
-                  matTooltip="Dump File"><mat-icon><img class="logo"
-                              src="assets/icons/dump.svg"></mat-icon></button>
+            <button (click)="downloadFile()" matTooltip="Download File">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/download-archive.svg">
+                  </mat-icon>
+            </button>
 
-            <button (click)="assembleCode()" matTooltip="Assemble Code"><mat-icon><img class="logo"
-                              src="assets/icons/assembly.svg"></mat-icon></button>
-                          
-            <button (click)="runEntireProgram()" [disabled]="canExecuteInstruction()"><mat-icon><img class="logo"
-                              src="assets/icons/execute.svg"></mat-icon></button>
+            <button (click)="dumpFile()" style="margin-right: 40px;" [disabled]="!getCanDump()" matTooltip="Dump File">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/dump.svg">
+                  </mat-icon>
+            </button>
 
-            <button (click)="runOneStep()" [disabled]="canExecuteInstruction()"><mat-icon><img class="logo"
-                              src="assets/icons/redo.svg"></mat-icon></button>
-                            
-            <button (click)="undoLastStep()" [disabled]="canUndoLastStep()"><mat-icon><img class="logo"
-                              src="assets/icons/undo.svg"></mat-icon></button>
+            <button (click)="assembleCode()" matTooltip="Assemble Code">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/assembly.svg">
+                  </mat-icon>
+            </button>
 
-            <button (click)="resetAll()" [disabled]="!getCanRun()"><mat-icon><img class="logo"
-                              src="assets/icons/reset.svg"></mat-icon></button>
+            <button (click)="runEntireProgram()" [disabled]="canExecuteInstruction()" matTooltip="Run">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/execute.svg">
+                  </mat-icon>
+            </button>
 
-            <button (click)="help()" matTooltip="Help" [disabled]="false"><mat-icon><img class="logo"
-                              src="assets/icons/help.svg"></mat-icon></button>
+            <button (click)="runOneStep()" [disabled]="canExecuteInstruction()" matTooltip="Run One Step">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/redo.svg">
+                  </mat-icon>
+            </button>
+
+            <button (click)="undoLastStep()" [disabled]="canUndoLastStep()" matTooltip="Undo Last Step">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/undo.svg">
+                  </mat-icon>
+            </button>
+
+            <button (click)="resetAll()" [disabled]="!getCanRun()" matTooltip="Reset">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/reset.svg">
+                  </mat-icon>
+            </button>
+
+            <button (click)="help()" matTooltip="Help" [disabled]="false" matTooltip="Help">
+                  <mat-icon>
+                        <img class="logo" src="assets/icons/help.svg">
+                  </mat-icon>
+            </button>
       </div>
       <!-- <img src="assets/imgs/logos/saturn.png" alt="saturn-logo" class="logo">  -->
 </div>

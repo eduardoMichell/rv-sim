@@ -1,6 +1,7 @@
 export type Asm = {
     code: Code,
-    memories: Memories
+    memories: Memories,
+    control?: any
 }
 
 export type Code = {

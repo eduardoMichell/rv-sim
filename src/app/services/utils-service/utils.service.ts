@@ -4,6 +4,7 @@ import { saveAs } from 'file-saver';
 import { ConstantsInit } from 'src/app/core/utils/constants';
 import { Asm, Code, Memories, Text, Data } from 'src/app/core/utils/types';
 import { RuntimeService } from '../runtime-service/runtime.service';
+import { RVControl } from 'src/app/core/utils/classes';
 
 @Injectable({
   providedIn: 'root'
@@ -107,11 +108,11 @@ export class UtilsService {
     this.console = '';
   }
 
-
   initAsm(): Asm {
     return {
       code: this.initCode(),
-      memories: this.initMemories()
+      memories: this.initMemories(),
+      control: new RVControl()
     }
   }
 
@@ -132,7 +133,7 @@ export class UtilsService {
       regFile: {
         x0: 0,
         x1: 0,
-        x2: 2147479548, 
+        x2: 2147479548,
         x3: 268468224,
         x4: 0,
         x5: 0,
@@ -171,7 +172,8 @@ export class UtilsService {
   createAsmObject(asm: Asm) {
     return {
       code: asm.code,
-      memories: asm.memories
+      memories: asm.memories,
+      control: asm.control
     }
   }
 

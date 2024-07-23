@@ -147,7 +147,6 @@ export class ExecuteComponent implements OnInit, OnDestroy {
   }
 
   previousPage() {
-    console.log(this.control)
     if(this.control > 0) {
       this.page--;
     }

@@ -21,7 +21,9 @@ export class RegFile {
     write(regWrite: boolean, writeRg: string, data: string) {
         if (regWrite && binaryToDecimal(writeRg) !== 0) {
             this.writeRegister('x' + binaryToDecimal(writeRg), data);
+            return binaryToDecimal(writeRg);
         }
+        return -1;
     }
 }
 

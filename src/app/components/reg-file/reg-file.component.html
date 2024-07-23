@@ -11,8 +11,8 @@
     <div class="tbody-container">
         <table>
             <tbody>
-                <ng-container *ngFor="let reg of convertedCode.memories.regFile | keyvalue: originalOrder">
-                    <tr>
+                <ng-container *ngFor="let reg of convertedCode.memories.regFile | keyvalue: originalOrder;  let index = index; let last = last">
+                    <tr [id]="'row-reg-' + index" [class.selected-row]="rowIndex === index">
                         <td>{{getRegName(reg.key)}}</td>
                         <td>{{reg.key.toString().slice(1)}}</td>
                         <td>{{this.getHexValues(reg.value)}}</td>

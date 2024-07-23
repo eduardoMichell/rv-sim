@@ -1,7 +1,9 @@
 import { KeyValue } from '@angular/common';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ConstantsInit } from 'src/app/core/utils/constants';
 import { Asm } from 'src/app/core/utils/types';
+import { ButtonsService } from 'src/app/services/buttons-service/buttons.service';
 import { CodeService } from 'src/app/services/code-service/code.service';
 import { UtilsService } from 'src/app/services/utils-service/utils.service';
 
@@ -10,22 +12,34 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
   templateUrl: './reg-file.component.html',
   styleUrls: ['./reg-file.component.scss']
 })
-export class RegFileComponent implements OnDestroy {
-
+export class RegFileComponent implements OnInit, OnDestroy {
   private codeSubscription: Subscription;
+  private buttonSubscription: Subscription;
+  rowIndex: number = -1;
   convertedCode: Asm;
+
   constructor(
     private codeService: CodeService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private buttonService: ButtonsService,
   ) {
     this.convertedCode = this.codeService.getConvertedCode();
     this.codeSubscription = this.codeService.convertedCode$.subscribe((convertedCode) => {
       this.convertedCode = convertedCode;
     });
+
+    this.buttonSubscription = this.buttonService.regRowIndex$.subscribe((rowIndex) => {
+      this.scrollToSelectedRow(rowIndex);
+      this.rowIndex = rowIndex;
+    });
   }
 
+  ngOnInit() {
+    this.scrollToSelectedRow(-1);
+  }
   ngOnDestroy() {
     this.codeSubscription.unsubscribe();
+    this.buttonSubscription.unsubscribe();
   }
 
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => {
@@ -104,5 +118,13 @@ export class RegFileComponent implements OnDestroy {
 
   getHexValues(value: any) {
     return this.utilsService.isHexadecimalValues(value);
+  }
+
+  scrollToSelectedRow(number: number) {
+    const rowId = 'row-reg-' + number;
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+    }
   }
 }

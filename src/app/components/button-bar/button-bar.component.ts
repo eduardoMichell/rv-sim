@@ -83,6 +83,7 @@ export class ButtonBarComponent implements OnDestroy {
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+      this.buttonService.setRegRowCodeIndex(this.convertedCode.control.getLastRegIndex());
     } else {
       this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
     }
@@ -102,9 +103,11 @@ export class ButtonBarComponent implements OnDestroy {
     if (!this.canUndoLastStep()) {
       const previous = this.codeService.getLastPreviousCode();
       if (previous) {
+        console.log(previous)
         this.codeService.setConvertedCode(previous);
         this.buttonService.setCanUndoLastStep(false);
         this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
+        this.buttonService.setRegRowCodeIndex(this.convertedCode.control.getLastRegIndex());
       }
     }
   }
@@ -150,6 +153,7 @@ export class ButtonBarComponent implements OnDestroy {
     this.buttonService.setCanUndoLastStep(true);
     this.buttonService.setCanRun(false);
     this.buttonService.setCanDump(false);
+    this.buttonService.setRegRowCodeIndex(-1);
     this.setConvertedCode(this.codeService.getCode());
   }
 
@@ -176,6 +180,5 @@ export class ButtonBarComponent implements OnDestroy {
   getCanDump() {
     return this.buttonService.getCanDump();
   }
-
 }
 

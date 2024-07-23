@@ -15,7 +15,8 @@ export class RiscvService {
         regFile: riscv.regFile.registers,
         memory: riscv.memory.memory,
         pc: riscv.pc.getPc()
-      }
+      },
+      control: riscv.rvControl
     }
     return { error: false, data: result, message: 'Success' };
   }
@@ -30,7 +31,8 @@ export class RiscvService {
         regFile: riscv.regFile.registers,
         memory: riscv.memory.memory,
         pc: riscv.pc.getPc()
-      }
+      },
+      control: riscv.rvControl
     }
     return { error: false, data: result, message: 'Success' };
   }

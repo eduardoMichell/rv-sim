@@ -17,11 +17,15 @@ export class ButtonsService {
   private rowIndex: number;
   rowIndex$ = new Subject<number>();
 
+  private regRowIndex: number;
+  regRowIndex$ = new Subject<number>();
+
   constructor() {
     this.canRun = false;
     this.canUndoLastStepBool = true;
     this.canDump = false;
     this.rowIndex = 0;
+    this.regRowIndex = -1;
   }
 
   setCanRun(canRun: boolean) {
@@ -58,5 +62,14 @@ export class ButtonsService {
 
   getRowCodeIndex() {
     return this.rowIndex;
+  }
+
+  setRegRowCodeIndex(rowIndex: number) {
+    this.regRowIndex = rowIndex;
+    this.regRowIndex$.next(rowIndex);
+  }
+
+  getRegRowCodeIndex() {
+    return this.regRowIndex;
   }
 }

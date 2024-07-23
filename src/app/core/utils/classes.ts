@@ -15,7 +15,20 @@ export class Instruction {
     this.info = this.getInstInfo(this.inst);
   }
 
-  getInstInfo(instruction: string){
+  getInstInfo(instruction: string) {
     return Instructions[instruction];
+  }
+}
+
+export class RVControl {
+  private lastRegIndex: number;
+  constructor() {
+    this.lastRegIndex = -1;
+  }
+  setLastRegIndex(lastRegIndex: number) {
+    this.lastRegIndex = lastRegIndex;
+  }
+  getLastRegIndex() {
+    return this.lastRegIndex;
   }
 }
