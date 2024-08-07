@@ -253,19 +253,31 @@ function verifyData(data: Data[]) {
 }
 
 function checkDataElement(element: Data) {
-    if (!element.label.includes(":")) {
+    let elementLabel = "";
+    if (!element.label.endsWith(":")) {
         return {
             error: true,
             message: `"${element.label}" is not a valid label`
         }
+    } else {
+        elementLabel = element.label.slice(0, -1);
     }
-
-    if (/[^a-zA-Z0-9:]/.test(element.label)) {
+    
+    if (/^[0-9]/.test(elementLabel)) {
         return {
             error: true,
-            message: `"${element.label}" cannot have special characters`
-        }
+            message: `"${elementLabel}" cannot start with a number`
+        };
     }
+    
+    const regex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+    if (!regex.test(elementLabel)) {
+        return {
+            error: true,
+            message: `"${elementLabel}" cannot have special characters`
+        };
+    }
+    
 
     switch (element.directive) {
         case ".ascii":
@@ -582,6 +594,7 @@ function checkBFormatInst(line: string[], symbolTable: Array<any>) {
     const t1 = line[1] ? line[1] : '';
     const t2 = line[2] ? line[2] : '';
     const label = line[3] ? line[3] : '';
+    console.log(label, symbolTable)
 
     if (t1 === '' || t2 === '' || label === '' || line[4]) {
         return {
