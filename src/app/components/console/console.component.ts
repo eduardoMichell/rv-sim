@@ -7,8 +7,10 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
   styleUrls: ['./console.component.scss']
 })
 export class ConsoleComponent {
-  constructor(private utils: UtilsService) {
-  }
+  input: string = '';
+  allowInput: boolean = false; 
+
+  constructor(private utils: UtilsService) {}
 
   printConsole(func: string, message: string) {
     this.utils.setConsole(func, message);
@@ -20,5 +22,20 @@ export class ConsoleComponent {
 
   clearConsole() {
     this.utils.clearConsole();
+  }
+
+  onEnter() {
+    if (this.allowInput && this.input.trim()) {
+      this.printConsole('User Input', `$: ${this.input}`);
+      this.input = '';
+    }
+  }
+
+  enableInput() {
+    this.allowInput = true;
+  }
+
+  disableInput() {
+    this.allowInput = false;
   }
 }

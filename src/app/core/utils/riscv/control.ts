@@ -23,8 +23,8 @@ export class Control {
         let memUsgn: any = 0;
 
         const instructionFormat = this.getInstructionFormat(opcode);
-        console.log("opcode:",opcode)
-        console.log("instructionFormat:", instructionFormat)
+        // console.log("opcode:",opcode)
+        // console.log("instructionFormat:", instructionFormat)
         // -------------------- ALU --------------------
         const shiftOp = getBinaryRange(1, 0, funct3) === '01' ? 1 : 0;
         const branchOp = this.getBranchOperation(funct3);

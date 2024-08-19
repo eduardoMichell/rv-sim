@@ -20,7 +20,8 @@ export type Data = {
     directive: string,
     label: string,
     source: Array<any>,
-    basic: Array<any>
+    basic: Array<any>,
+    memoryPosition?: number
 }
 
 export type Memories = {

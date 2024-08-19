@@ -5,10 +5,12 @@ import { Code, Data, Text } from '../types';
 export class Memory {
     memory: any;
     constructor(memory: Map<any, any>, code: Code) {
+        this.memory = memory;
         this.memory = this.setDataToDataMem(memory, code.data || []);
         this.memory = this.setTextToInstMem(memory, code.text);
     }
-    writeMemory(address: number, data: Data[], memWrite: boolean) {
+
+    writeMemory(address: number, data: any, memWrite: boolean) {
         if (memWrite) {
             this.memory.set(address, data);
         }

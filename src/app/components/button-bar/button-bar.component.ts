@@ -12,6 +12,7 @@ import { UtilsService } from 'src/app/services/utils-service/utils.service';
 import { assembly } from 'src/app/core/utils/riscv-utils';
 import { convertWrittenCode } from 'src/app/core/utils/riscv-utils';
 import { RiscvService } from 'src/app/services/riscv-service/riscv.service';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'app-button-bar',
@@ -80,12 +81,13 @@ export class ButtonBarComponent implements OnDestroy {
     if (!this.canExecuteInstruction()) {
       this.codeService.setPreviousCode(this.codeService.getConvertedCode());
       const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
+
       this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
       this.buttonService.setRegRowCodeIndex(this.convertedCode.control.getLastRegIndex());
     } else {
-      this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
+      this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true);
     }
   }
 
@@ -103,14 +105,25 @@ export class ButtonBarComponent implements OnDestroy {
     if (!this.canUndoLastStep()) {
       const previous = this.codeService.getLastPreviousCode();
       if (previous) {
-        console.log(previous)
-        this.codeService.setConvertedCode(previous);
-        this.buttonService.setCanUndoLastStep(false);
+        console.log('Restaurando estado anterior:', previous);
+        this.codeService.setConvertedCode(cloneDeep(previous));
+  
+        // Reaplique explicitamente todos os estados
+        this.convertedCode.memories.pc = previous.memories.pc;
+        this.convertedCode.memories.regFile = cloneDeep(previous.memories.regFile);
+        this.convertedCode.memories.memory = cloneDeep(previous.memories.memory);
+        this.convertedCode.control = cloneDeep(previous.control);
+  
+        // Atualize os índices e os botões
+        this.buttonService.setCanUndoLastStep(this.codeService.getPreviousCode().length < 1);
         this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-        this.buttonService.setRegRowCodeIndex(this.convertedCode.control.getLastRegIndex());
+        this.buttonService.setRegRowCodeIndex(previous.control.getLastRegIndex());
+  
+        console.log('Estado restaurado. PC atual:', this.convertedCode.memories.pc);
       }
     }
   }
+
 
   async dumpFile() {
     this.dialog.open(DumpFileDialogComponent, {
@@ -162,6 +175,7 @@ export class ButtonBarComponent implements OnDestroy {
     convertedCode.memories = this.utilsService.initMemories();
     convertedCode.code = convertWrittenCode(code);
     this.codeService.setConvertedCode(convertedCode);
+    this.codeService.clearPreviousCode();
   }
 
   canExecuteInstruction(): boolean {

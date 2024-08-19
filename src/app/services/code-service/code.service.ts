@@ -2,20 +2,20 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { Asm } from 'src/app/core/utils/types';
 import { UtilsService } from '../utils-service/utils.service';
-import { cloneDeep } from 'lodash'; 
+import { cloneDeep } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CodeService {
   private code: string = '.data\n\n.text\n';
-  code$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  code$: BehaviorSubject<string> = new BehaviorSubject<string>(this.code);
 
   private convertedCode: Asm;
-  convertedCode$ = new Subject<Asm>();
+  convertedCode$ = new BehaviorSubject<Asm>(this.utils.initAsm());
 
-  private previousCode: Array<Asm>;
-  previousCode$ = new Subject<Array<Asm>>();
+  private previousCode: Array<Asm> = [];
+  previousCode$ = new BehaviorSubject<Array<Asm>>(this.previousCode);
 
   constructor(private utils: UtilsService) {
     this.code = '.data\n\n.text\n';

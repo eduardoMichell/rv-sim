@@ -8,11 +8,10 @@ export function assembly(code: Asm) {
         if (resData.error) {
             return resData;
         }
-
     }
 
-    //TODO: verifySymbolTable;
-    //TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer (".ascii" directive cannot appear in text segment)
+    // TODO: verifySymbolTable;
+    // TODO: verificar se algum elemento é alguma diretiva e dizer q nao pode aparecer (".ascii" directive cannot appear in text segment)
     const resText = verifyText(code.code.text, code.code.data || []);
     if (resText.error) {
         return resText;
@@ -21,12 +20,12 @@ export function assembly(code: Asm) {
     return {
         error: false,
         message: ''
-    }
+    };
 }
 
 export function convertWrittenCode(code: string): Code {
     const data: Array<Data> = createData(code);
-    const text: Text = createText(code);
+    const text: Text = createText(code, data);
     return {
         text,
         data
@@ -37,13 +36,13 @@ export function shiftLeft(decimal: number, base: number) {
     return decimal << base;
 }
 
-export function decimalToBinary(decimal: any) {
-    const isNegative = decimal < 0;
-    return isNegative ? (decimal >>> 0).toString(2) : parseInt(decimal).toString(2);
+export function decimalToBinary(decimal: number | string) {
+    const isNegative = Number(decimal) < 0;
+    return isNegative ? (Number(decimal) >>> 0).toString(2) : parseInt(decimal.toString()).toString(2);
 }
 
 export function hexadecimalToBinary(hex: string) {
-    return (parseInt(hex, 16).toString(2)).padStart(8, '0');
+    return parseInt(hex, 16).toString(2).padStart(8, '0');
 }
 
 export function getBinaryRange(left: number, right: number, imm: string) {
@@ -68,68 +67,51 @@ export function binaryToDecimalSigned(binary: string) {
             inverse += binary[i] === '0' ? '1' : '0';
         }
         return (parseInt(inverse, 2) + 1) * -1;
-    } else {
-        return parseInt(binary, 2);
     }
+    return parseInt(binary, 2);
 }
 
-export function convertArrayBinaryToHexadecimal(code: any) {
-    const hex = [];
-    for (const binary of code) {
-        hex.push(hesizeHex(binaryToHexadecimal(binary), 10));
-    }
-    return hex.toString().replace(/,/g, '\n');
+export function convertArrayBinaryToHexadecimal(code: string[]): string {
+    return code
+        .map(binary => resizeHex(binaryToHexadecimal(binary), 10))
+        .join('\n');
 }
 
 export function convertConfigToText(code: any, pc: number) {
-    const data: any = {
-        address: [],
-        code: [],
-        basic: [],
-        source: []
-    }
+    const data: any = { address: [], code: [], basic: [], source: [] };
     let pcCount = pc;
-    for (let i = 0; i < code.text.machineCode.length; i++) {
+
+    code.text.machineCode.forEach((machineCode: string, i: number) => {
         data.address.push(decimalToHex(pcCount));
-        data.code.push(hesizeHex(binaryToHexadecimal(code.text.machineCode[i]), 10));
+        data.code.push(resizeHex(binaryToHexadecimal(machineCode), 10));
         data.basic.push(code.text.basic[i]);
         data.source.push(code.text.source[i]);
         pcCount += 4;
-    }
+    });
+
     let text = 'Address        Code              Basic                   Line  Source\n';
-    for (let i = 0; i < data.address.length; i++) {
-        text += `${data.address[i]}     ${data.code[i]}        ${data.basic[i].inst}${" ".repeat(24 - data.basic[i].inst.toString().length)}${i + 1}     ${data.source[i]}\n`;
-    }
+    data.address.forEach((address: string, i: number) => {
+        text += `${address}     ${data.code[i]}        ${data.basic[i].inst}${" ".repeat(24 - data.basic[i].inst.toString().length)}${i + 1}     ${data.source[i]}\n`;
+    });
+
     return text;
 }
 
 export function decimalToHex(decimal: number): string {
-    return hesizeHex(decimal.toString(16), 10);
+    return resizeHex(decimal.toString(16), 10);
 }
 
-export function hesizeHex(instructions: string, quantity: number, number = '0') {
-    const increment = quantity - instructions.length;
-    for (let i = 0; i < increment; i++) {
-        instructions = (i === increment - 2 ? 'x' : number) + instructions;
-    }
-    return instructions;
+export function resizeHex(instructions: string, quantity: number, fillChar = '0') {
+    return instructions.padStart(quantity - 2, fillChar).padStart(quantity, 'x');
 }
 
-export function resize(instruction: string, quantity: number, number = '0') {
-    const increment = quantity - instruction.length;
-    for (let i = 0; i < increment; i++) {
-        instruction = number + instruction;
-    }
-    return instruction;
+export function resize(instruction: string, quantity: number, fillChar = '0') {
+    return instruction.padStart(quantity, fillChar);
 }
 
 export function resizeSigned(instruction: string, quantity: number) {
-    const number = instruction[0] === '1' ? '1' : '0';
-    const increment = quantity - instruction.length;
-    for (let i = 0; i < increment; i++) {
-        instruction = number + instruction;
-    }
-    return instruction;
+    const fillChar = instruction[0] === '1' ? '1' : '0';
+    return instruction.padStart(quantity, fillChar);
 }
 
 export function toUnsigned32(num: number) {
@@ -142,17 +124,16 @@ export function getOpcode(instruction: string) {
 
 export function getFunct3(instruction: string) {
     return getBinaryRange(14, 12, instruction);
-
 }
 
 export function getFunct7(instruction: string) {
     return getBinaryRange(31, 25, instruction);
-
 }
 
 function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Array<any>, data: Data[]) {
-    const instruction = basicLine.isPseudo ? basicLine.inst[0] : sourceLine[0];
-    const line = basicLine.isPseudo ? basicLine.inst : sourceLine;
+    const isPseudo = basicLine.isPseudo;
+    const instruction = isPseudo ? basicLine.inst[0] : sourceLine[0];
+    const line = isPseudo ? basicLine.inst : sourceLine;
     switch (instruction) {
         case 'add':
         case 'sub':
@@ -184,16 +165,6 @@ function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Ar
         case 'slli':
         case 'srli':
         case 'srai':
-            // case 'fence':
-            // case 'fence.i':
-            // case 'ecall':
-            // case 'ebreak':
-            // case 'csrrw':
-            // case 'csrrs':
-            // case 'csrrc':
-            // case 'csrrwi':
-            // case 'csrrsi':
-            // case 'csrrci': 
             return checkIFormatInst(line);
         case 'beq':
         case 'bne':
@@ -205,7 +176,7 @@ function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Ar
         case "bgtu":
         case "ble":
         case "bleu":
-            return checkBFormatInst(line, symbolTable);
+            return checkBFormatInst(line, symbolTable, isPseudo, sourceLine);
         case 'lui':
         case 'auipc':
             return checkUFormatInst(line, sourceLine, data);
@@ -215,24 +186,18 @@ function checkInstructions(basicLine: any, sourceLine: string[], symbolTable: Ar
             return {
                 error: true,
                 message: `"${instruction}" is not a recognized operator`,
-            }
+            };
     }
 }
 
 function verifyText(text: Text, data: Data[]) {
     for (let i = 0; i < text.basic.length; i++) {
-        const basicLine = text.basic[i];
-        const sourceLine = text.source[i];
-        const res = checkInstructions(basicLine, sourceLine, text.symbolTable ? text.symbolTable : [], data);
+        const res = checkInstructions(text.basic[i], text.source[i], text.symbolTable || [], data);
         if (res.error) {
             return res;
         }
-
     }
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function verifyData(data: Data[]) {
@@ -246,38 +211,14 @@ function verifyData(data: Data[]) {
             return res;
         }
     }
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function checkDataElement(element: Data) {
-    let elementLabel = "";
-    if (!element.label.endsWith(":")) {
-        return {
-            error: true,
-            message: `"${element.label}" is not a valid label`
-        }
-    } else {
-        elementLabel = element.label.slice(0, -1);
+    const elementLabel = validateLabel(element.label);
+    if (elementLabel.error) {
+        return elementLabel;
     }
-    
-    if (/^[0-9]/.test(elementLabel)) {
-        return {
-            error: true,
-            message: `"${elementLabel}" cannot start with a number`
-        };
-    }
-    
-    const regex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
-    if (!regex.test(elementLabel)) {
-        return {
-            error: true,
-            message: `"${elementLabel}" cannot have special characters`
-        };
-    }
-    
 
     switch (element.directive) {
         case ".ascii":
@@ -286,35 +227,49 @@ function checkDataElement(element: Data) {
         case ".word":
             return checkDataWord(element);
         default:
-            const message = element.directive.length > 0 ? `"${element.directive}" is not a valid directive` :
-                `Non-existent directive`
-            return {
-                error: true,
-                message
-            }
+            const message = element.directive.length > 0 ? `"${element.directive}" is not a valid directive` : `Non-existent directive`;
+            return { error: true, message };
     }
+}
+
+function validateLabel(label: string) {
+    if (!label.endsWith(":")) {
+        return { error: true, message: `"${label}" is not a valid label` };
+    }
+
+    const labelWithoutColon = label.slice(0, -1);
+
+    if (/^[0-9]/.test(labelWithoutColon)) {
+        return { error: true, message: `"${labelWithoutColon}" cannot start with a number` };
+    }
+
+    const regex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
+    if (!regex.test(labelWithoutColon)) {
+        return { error: true, message: `"${labelWithoutColon}" cannot have special characters` };
+    }
+
+    return { error: false, message: '' };
 }
 
 function checkDuplicateLabel(data: Data[]) {
     const duplicated = data.find((item, index) => data.findIndex(el => el.label === item.label) !== index);
     if (duplicated) {
-        const label = duplicated?.label.slice(0, duplicated?.label.length - 1);
+        const label = duplicated.label.slice(0, -1);
         return { error: true, message: `label "${label}" already defined` };
-    } else {
-        return { error: false, message: "" };
     }
+    return { error: false, message: '' };
 }
 
 function checkDataAscii(line: Data) {
-    if (haveString(line.basic)) {
-        if (checkIfHaveDifferentDirectives(line.basic, ['.ascii', '.string'])) {
+    if (containsString(line.basic)) {
+        if (containsDifferentDirectives(line.basic, ['.ascii', '.string'])) {
             return {
                 error: true,
                 message: 'It is not possible to define more than one directive in a label'
             }
         }
         const elementWithoutDirectives = removeDirectives(line.basic);
-        const elementNoString = firstElementNoString(elementWithoutDirectives);
+        const elementNoString = firstInvalidStringElement(elementWithoutDirectives);
         if (elementNoString.error) {
             return elementNoString;
         }
@@ -335,400 +290,229 @@ function checkDataAscii(line: Data) {
 }
 
 function checkDataWord(line: Data) {
-    if (!haveString(line.basic)) {
-        if (checkIfHaveDifferentDirectives(line.basic, ['.word'])) {
-            return {
-                error: true,
-                message: 'It is not possible to define more than one directive in a label'
-            }
+    if (!containsString(line.basic)) {
+        if (containsDifferentDirectives(line.basic, ['.word'])) {
+            return { error: true, message: 'It is not possible to define more than one directive in a label' };
         }
-
-        const elementWithoutDirectives = removeDirectives(line.basic);
-        const areAllIntegersRes = areAllIntegers(elementWithoutDirectives);
+        const basicWithoutDirectives = removeDirectives(line.basic);
+        const areAllIntegersRes = areAllIntegers(basicWithoutDirectives);
         if (areAllIntegersRes.error) {
-            return areAllIntegersRes
+            return areAllIntegersRes;
         }
-        line.basic = restrictNumber(elementWithoutDirectives);
+        line.basic = restrictNumber(basicWithoutDirectives);
     } else {
         if (line.basic.length > 0) {
-            return {
-                error: true,
-                message: `This directive only accepts numbers`
-            }
+            return { error: true, message: `This directive only accepts numbers` };
         }
     }
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function areAllIntegers(array: string[]) {
-    for (let i = 0; i < array.length; i++) {
-        if (!/^-?\d+$/.test(array[i])) {
-            return { error: true, message: `"${array[i]}" is not a valid integer number` };
+    for (const item of array) {
+        if (!/^-?\d+$/.test(item)) {
+            return { error: true, message: `"${item}" is not a valid integer number` };
         }
     }
-    return { error: false, message: "" };
+    return { error: false, message: '' };
 }
 
 function restrictNumber(numbers: string[]) {
     const lowerLimit = Bit32Limit.lowerLimit;
     const upperLimit = Bit32Limit.upperLimit;
-    const newBasic = [];
-    for (const number of numbers) {
+    const newBasic = numbers.map(num => {
         const range = upperLimit - lowerLimit + 1;
-        if (Number.parseInt(number) > upperLimit) {
-            newBasic.push(lowerLimit + (Number.parseInt(number) - upperLimit - 1) % range);
-            continue;
+        let number = parseInt(num);
+        if (number > upperLimit) {
+            return lowerLimit + (number - upperLimit - 1) % range;
         }
-        if (Number.parseInt(number) < lowerLimit) {
-            newBasic.push(upperLimit - (lowerLimit - Number.parseInt(number) - 1) % range);
-            continue;
+        if (number < lowerLimit) {
+            return upperLimit - (lowerLimit - number - 1) % range;
         }
-        newBasic.push(Number.parseInt(number));
-    }
+        return number;
+    });
 
     return newBasic;
 }
 
-function checkIfHaveDifferentDirectives(array: string[], directivesToIgnore: string[]) {
+function containsDifferentDirectives(array: string[], directivesToIgnore: string[]) {
     const ignoreSet = new Set(directivesToIgnore);
     const directivesAux = Directives.filter((element: string) => !ignoreSet.has(element));
-    for (const element of array) {
-        for (const directive of directivesAux) {
-            if (element.includes(directive)) {
-                return true;
-            }
-        }
-    }
-    return false;
+    return array.some(element => directivesAux.some((directive: string) => element.includes(directive)));
 }
 
 function removeDirectives(array: string[]) {
-    const newData = [];
-    for (let element of array) {
-        const regex = new RegExp(Directives.join('|'), 'g');
-        const aux = element.replace(regex, '');
-        if (aux.length > 0) {
-            newData.push(aux);
-        }
-    }
-    return newData;
+    const regex = new RegExp(Directives.join('|'), 'g');
+    return array.map(element => element.replace(regex, '')).filter(Boolean);
 }
 
-function firstElementNoString(array: string[]): any {
+function firstInvalidStringElement(array: string[]): any {
     let incompleteString = '';
-    for (let i = 0; i < array.length; i++) {
-        const string = array[i];
+    for (const string of array) {
         if (!string.startsWith('"') || !string.endsWith('"')) {
             incompleteString += string + ' ';
-            if (i === array.length - 1) {
-                return {
-                    error: true,
-                    message: `"${incompleteString.trim()}" is not a valid string`
-                };
+            if (string === array[array.length - 1]) {
+                return { error: true, message: `"${incompleteString.trim()}" is not a valid string` };
             }
         } else if (incompleteString !== '') {
-            return {
-                error: true,
-                message: `"${incompleteString.trim()}" is not a valid string`
-            };
+            return { error: true, message: `"${incompleteString.trim()}" is not a valid string` };
         }
     }
-    return {
-        error: false,
-        message: ""
-    };
+    return { error: false, message: '' }
 }
 
 function convertStringToNumberArray(string: string): number[] {
     const stringArrayNumber: number[] = [];
-    const words = [];
-    let cont = 0;
-    while (cont < string.length) {
-        words.push(string.substr(cont, 4));
-        cont += 4;
-    }
-    for (let word of words) {
+    const words = string.match(/.{1,4}/g) || [];
+
+    words.forEach(word => {
         let hexString = '0x';
         for (let i = word.length - 1; i >= 0; i--) {
             const charCode = word.charCodeAt(i).toString(16);
             hexString += charCode.padStart(2, '0');
         }
-        stringArrayNumber.push(parseInt(hexString.substring(2), 16));
-    }
+        stringArrayNumber.push(parseInt(hexString, 16));
+    });
+
     return stringArrayNumber;
 }
 
-function haveString(line: string[]): boolean {
-    for (const element of line) {
-        if (element.includes('"')) {
-            return true;
-        }
-    }
-    return false;
+function containsString(line: string[]): boolean {
+    return line.some(element => element.includes('"'));
 }
 
 function checkRFormatInst(line: string[]) {
-    const instruction = line[0] ? line[0] : '';
-    const t1 = line[1] ? line[1] : '';
-    const t2 = line[2] ? line[2] : '';
-    const t3 = line[3] ? line[3] : '';
+    const [instruction, t1, t2, t3] = line;
 
-    if (t1 === '' || t2 === '' || t3 === '' || line[4]) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,t3`
-        }
+    if (!t1 || !t2 || !t3 || line[4]) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,t3` };
     }
 
-    if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
+    if (!RegFile[t1] || !RegFile[t2] || !RegFile[t3]) {
+        return { error: true, message: `"${t1}" or "${t2}" or "${t3}" operand is of incorrect type` };
     }
-    if (!RegFile[t2]) {
-        return {
-            error: true,
-            message: `"${t2}" operand is of incorrect type`
-        }
-    }
-    if (!RegFile[t3]) {
-        return {
-            error: true,
-            message: `"${t3}" operand is of incorrect type`
-        }
-    }
-    return {
-        error: false,
-        message: ''
-    }
+
+    return { error: false, message: '' };
 }
 
 function checkIFormatInst(line: string[]) {
-    const t1 = line[1] ? line[1] : '';
-    const t2 = line[2] ? line[2] : '';
-    const immediate = line[3] ? line[3] : '';
+   
+    const [instruction, t1, t2, immediate] = line;
 
-    const instruction = line[0] ? line[0] : '';
-
-    if (t1 === '' || t2 === '' || immediate === '' || line[4]) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,-100`
-        }
+    if (!t1 || !t2 || !immediate || line[4]) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,-100` };
     }
 
-    if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
-    }
-
-    if (!RegFile[t2]) {
-        return {
-            error: true,
-            message: `"${t2}" operand is of incorrect type`
-        }
+    if (!RegFile[t1] || !RegFile[t2]) {
+        return { error: true, message: `"${t1}" or "${t2}" operand is of incorrect type` };
     }
 
     if (!isValidImmediateIFormat(immediate)) {
-        return {
-            error: true,
-            message: `"${immediate}" operand is out of range or is not a valid number`
-        }
+        console.log("I format")
+        return { error: true, message: `"${immediate}" operand is out of range or is not a valid number` };
     }
 
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function checkMemFormatInst(line: string[]) {
-    const t1 = line[1] ? line[1] : '';
-    const instruction = line[0];
+    const [instruction, t1, mem] = line;
 
-    if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
-    }
-    const mem = line[2] ? line[2] : '';
-    
-    if (!checkInstructionFormatWithParentheses(mem) || t1 === '' || !mem) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, -100(t2)`
-        }
+    if (!RegFile[t1] || !mem || !checkInstructionFormatWithParentheses(mem)) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, -100(t2)` };
     }
 
     const { imm, reg } = extractInstructionMemoryPosition(mem);
-
-    if (!isValidImmediateIFormat(imm)) {
-        return {
-            error: true,
-            message: `"${imm}" operand is out of range or is not a valid number`
-        }
+    if (!isValidImmediateIFormat(imm) || !RegFile[reg]) {
+        console.log("M format")
+        return { error: true, message: `"${imm}" operand is out of range or is not a valid number, or "${reg}" is not a valid register` };
     }
 
-    if (!RegFile[reg]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
-    }
-
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
-function checkBFormatInst(line: string[], symbolTable: Array<any>) {
-    const instruction = line[0] ? line[0] : '';
-    const t1 = line[1] ? line[1] : '';
-    const t2 = line[2] ? line[2] : '';
-    const label = line[3] ? line[3] : '';
-    console.log(label, symbolTable)
+function checkBFormatInst(line: string[], symbolTable: Array<any>, isPseudo: boolean, sourceLine: string[]) {
+    let label = line[3];
 
-    if (t1 === '' || t2 === '' || label === '' || line[4]) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,label`
-        }
+    if (isPseudo) {
+        label = sourceLine[sourceLine.length - 1];
     }
 
-    if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
+    const [instruction, t1, t2] = line;
+
+    if (!t1 || !t2 || !label || line[4]) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1,t2,label` };
     }
 
-    if (!RegFile[t2]) {
-        return {
-            error: true,
-            message: `"${t2}" operand is of incorrect type`
-        }
+    if (!RegFile[t1] || !RegFile[t2]) {
+        return { error: true, message: `"${t1}" or "${t2}" operand is of incorrect type` };
     }
-
     if (!labelExist(label, symbolTable)) {
-        return {
-            error: true,
-            message: `"${label}" not found in symbol table`
-        }
+        console.log(!labelExist(label, symbolTable), label, symbolTable, line)
+
+        return { error: true, message: `"${label}" not found in symbol table` };
     }
 
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function checkUFormatInst(line: string[], loadAddressLine: string[], data: Data[]) {
-    const instruction = line[0] ? line[0] : '';
-    const t1 = line[1] ? line[1] : '';
-    const immediate = line[2] ? line[2] : '';
+   
+    const [instruction, t1, immediate] = line;
     const isLa = loadAddressLine[0] === 'la';
 
-    if (t1 === '' || immediate === '' || line[3]) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, immediate`
-        }
+    if (!t1 || !immediate || line[3]) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, immediate` };
     }
 
     if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
+        return { error: true, message: `"${t1}" operand is of incorrect type` };
     }
 
-    if (isLa) {
-        if (!data.some(objeto => objeto.label === `${loadAddressLine?.[2]}:`)) {
-            return {
-                error: true,
-                message: `symbol "${loadAddressLine?.[2]}" not found in symbol table`
-            }
-        }
+    if (isLa && !data.some(obj => obj.label === `${loadAddressLine?.[2]}:`)) {
+        return { error: true, message: `symbol "${loadAddressLine?.[2]}" not found in symbol table` };
     }
 
-    if (!isValidUmmediateIFormat(immediate)) {
-        return {
-            error: true,
-            message: `"${immediate}" operand is out of range or is not a valid number`
-        }
+    if (!isValidImmediateUFormat(immediate)) {
+        console.log("U format")
+        return { error: true, message: `"${immediate}" operand is out of range or is not a valid number` };
     }
 
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
 function checkJFormatInst(line: string[]) {
-    const t1 = line[1] ? line[1] : '';
-    const immediate = line[2] ? line[2] : '';
-    const instruction = line[0] ? line[0] : '';
+   
+    const [instruction, t1, immediate] = line;
 
-    if (t1 === '' || immediate === '' || line[3]) {
-        return {
-            error: true,
-            message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, target`
-        }
+    if (!t1 || !immediate || line[3]) {
+        return { error: true, message: `"${instruction}" Too few or incorrectly formatted operands. Expected: ${instruction} t1, target` };
     }
 
     if (!RegFile[t1]) {
-        return {
-            error: true,
-            message: `"${t1}" operand is of incorrect type`
-        }
+        return { error: true, message: `"${t1}" operand is of incorrect type` };
     }
 
-    if (!isValidUmmediateIFormat(immediate)) {
-        return {
-            error: true,
-            message: `"${immediate}" operand is out of range or is not a valid number`
-        }
+    if (!isValidImmediateUFormat(immediate)) {
+        console.log("J format")
+        return { error: true, message: `"${immediate}" operand is out of range or is not a valid number` };
     }
 
-    return {
-        error: false,
-        message: ''
-    }
+    return { error: false, message: '' };
 }
 
-function labelExist(newLabel: string, symbolTable: Array<any>): boolean {
-    for (const label of symbolTable) {
-        if (label.label === newLabel) {
-            return true;
-        }
-    }
-    return false;
+function labelExist(label: string, symbolTable: Array<any>): boolean {
+    return symbolTable.some(symbol => symbol.label === label);
 }
 
 function isValidImmediateIFormat(imm: string): boolean {
     const number = parseInt(imm);
-    if (!isNaN(number) && number >= -2048 && number <= 2047) {
-        return true;
-    } else {
-        return false;
-    }
+    return !isNaN(number) && number >= -2048 && number <= 2047;
 }
 
-function isValidUmmediateIFormat(imm: string): boolean {
+function isValidImmediateUFormat(imm: string): boolean {
     const number = parseInt(imm);
-    if (!isNaN(number) && number >= -1048576 && number <= 1048575) {
-        return true;
-    } else {
-        return false;
-    }
+    return !isNaN(number) && number >= -1048576 && number <= 1048575;
 }
 
 function checkInstructionFormatWithParentheses(str: string): boolean {
@@ -739,9 +523,5 @@ function checkInstructionFormatWithParentheses(str: string): boolean {
 function extractInstructionMemoryPosition(str: string) {
     const regex = /^(-?\d+)\s?\((\w+)\)$/;
     const match = str.match(regex);
-    if (match) {
-        return { imm: match[1], reg: match[2] };
-    } else {
-        return { imm: '', reg: '' };
-    }
+    return match ? { imm: match[1], reg: match[2] } : { imm: '', reg: '' };
 }

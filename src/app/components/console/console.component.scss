@@ -10,7 +10,8 @@
   padding: 10px;
   margin: 10px 8px 8px 8px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: flex-start;
 }
 
@@ -19,8 +20,19 @@
   white-space: pre-line;
 }
 
+.input {
+  width: calc(100% - 30px);
+  margin-top: 5px;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  color: $t6;
+  font-family: monospace;
+  outline: none;
+}
+
 .clear-button {
-  align-self: end;
+  align-self: flex-end;
   background-color: $p1;
   color: $t6;
   width: 60px;
@@ -32,11 +44,11 @@
   bottom: 15px;
 }
 
-
-.clear-button:hover{
+.clear-button:hover {
   background-color: $p2;
 }
-.clear-button:active{
+
+.clear-button:active {
   background-color: $p1;
 }
 
