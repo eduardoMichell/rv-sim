@@ -39,7 +39,6 @@ export class RuntimeComponent implements OnInit, OnDestroy {
         this.code = code;
       }
     })
-
   }
 
   ngOnInit() {

@@ -3,7 +3,7 @@ import { RegFile } from '../constants';
 import { shiftLeft, decimalToBinary, getBinaryRange, resize } from '../riscv-utils';
 import { Text, Data, Code } from '../types'
 
-export class RiscvConverter {
+export class Assembler {
   text: Text;
   data: Data[];
   constructor(code: Code) {

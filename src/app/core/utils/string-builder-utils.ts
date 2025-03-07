@@ -337,12 +337,6 @@ function convertLoadWord(line: string[], numberOfInstructions: number, data: Arr
     }
 }
 
-function calculateOffset(instructionIndex: number, instructionSize: number = 4) {
-    // Calcula o deslocamento com base na posição da instrução e no tamanho das instruções
-    return -instructionIndex * instructionSize;
-}
-
-
 function convertLoadHalfWord(line: string[]) {
     const instruction = line[0].includes('u') ? 'lhu' : 'lh';
     return line.length === 3
@@ -548,7 +542,7 @@ function createLineArrayCode(separatedLineCode: string[]): Array<string[]> {
         }, []);
         if (!finalWords[0].startsWith('#')) {
             lineArrayCode.push(combineAfterHash(finalWords));
-        }
+        } 
     }
     return lineArrayCode;
 }

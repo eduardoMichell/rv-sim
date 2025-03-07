@@ -1,4 +1,4 @@
-import { RiscvConverter } from './riscvConverter';
+import { Assembler } from './assembler';
 import { RegFile } from './regFile';
 import { Memory } from './memory';
 import { Control } from './control';
@@ -35,7 +35,7 @@ export class RiscV {
     constructor(asm: any) {
         const { code, memories } = asm;
         const { regFile, pc, memory } = memories;
-        this.code = new RiscvConverter(code);
+        this.code = new Assembler(code);
         this.regFile = new RegFile(regFile);
         this.alu = new ALU();
         this.memory = new Memory(memory, this.code);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Asm } from 'src/app/core/utils/types';
 import { RiscV } from '../../core/utils/riscv/riscv';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RiscvService {
   private riscvInstance: RiscV | null = null;
@@ -19,14 +19,15 @@ export class RiscvService {
       this.assembleCode(convertedCode);
     } else {
       this.riscvInstance.memory.memory = new Map(convertedCode.memories.memory);
-      this.riscvInstance.regFile.registers = { ...convertedCode.memories.regFile };
+      this.riscvInstance.regFile.registers = {
+        ...convertedCode.memories.regFile,
+      };
       this.riscvInstance.pc.setPc(convertedCode.memories.pc);
     }
     this.riscvInstance?.runOneStep();
     const result = this.generateResult();
     return { error: false, data: result, message: 'Success' };
   }
-
 
   dumpFile(asm: Asm, type: string) {
     if (!this.riscvInstance) {
@@ -46,9 +47,9 @@ export class RiscvService {
       memories: {
         regFile: this.riscvInstance.regFile.registers,
         memory: this.riscvInstance.memory.memory,
-        pc: this.riscvInstance.pc.getPc()
+        pc: this.riscvInstance.pc.getPc(),
       },
-      control: this.riscvInstance.rvControl
+      control: this.riscvInstance.rvControl,
     };
   }
 }

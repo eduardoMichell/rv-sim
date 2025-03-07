@@ -22,7 +22,7 @@ export class CodeService {
     this.previousCode = [];
     this.convertedCode = this.utils.initAsm();
   }
-
+  
   setPreviousCode(code: Asm) {
     this.previousCode.push(cloneDeep(code));
     this.previousCode$.next(this.previousCode);

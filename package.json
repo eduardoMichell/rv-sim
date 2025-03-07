@@ -1,13 +1,15 @@
 {
   "name": "rv-front",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration=production --base-href=/rv-sim/",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "compodoc": "npx compodoc -p tsconfig.json",
+    "run-compodoc": "npx compodoc -s -p 8081"
   },
   "engines": {
     "node": "=16.16.0",
@@ -39,7 +41,7 @@
     "@types/file-saver": "^2.0.5",
     "@types/jasmine": "~3.10.0",
     "@types/lodash": "^4.17.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.20.55",
     "jasmine-core": "~3.10.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
