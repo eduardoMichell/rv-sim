@@ -197,7 +197,7 @@ function checkInstructions(
     case 'auipc':
       return checkUFormatInst(line, sourceLine, data);
     case 'jal':
-      return checkJFormatInst(line);
+      return checkJFormatInst(basicLine.inst);
     default:
       return {
         error: true,
@@ -595,7 +595,6 @@ function checkJFormatInst(line: string[]) {
   if (!RegFile[t1]) {
     return { error: true, message: `"${t1}" operand is of incorrect type` };
   }
-
   if (!isValidImmediateUFormat(immediate)) {
     console.log('J format');
     return {
