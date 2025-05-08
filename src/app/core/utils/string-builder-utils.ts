@@ -35,8 +35,7 @@ export function createText(code: string, data: Array<Data>): Text {
   const { newSource, symbolTable } = createSymbolTable(source);
   const basic: Array<string[]> = convertTextBasicLabels(
     createTextBasic(newSource),
-    symbolTable,
-    newSource
+    symbolTable
   );
 
   const text = processPseudoInstructions(newSource, basic, data);
