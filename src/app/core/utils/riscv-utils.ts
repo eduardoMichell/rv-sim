@@ -364,7 +364,6 @@ function areAllIntegers(array: string[]) {
 function restrictNumber(numbers: string[]) {
   const lowerLimit = Bit32Limit.lowerLimit;
   const upperLimit = Bit32Limit.upperLimit;
-  console.log(numbers);
   const newBasic = numbers.map((num) => {
     const range = upperLimit - lowerLimit + 1;
     let number = parseInt(num);
@@ -477,7 +476,6 @@ function checkIFormatInst(line: string[]) {
   }
 
   if (!isValidImmediateIFormat(immediate)) {
-    console.log('I format');
     return {
       error: true,
       message: `"${immediate}" operand is out of range or is not a valid number`,
@@ -499,7 +497,6 @@ function checkMemFormatInst(line: string[]) {
 
   const { imm, reg } = extractInstructionMemoryPosition(mem);
   if (!isValidImmediateIFormat(imm) || !RegFile[reg]) {
-    console.log('M format');
     return {
       error: true,
       message: `"${imm}" operand is out of range or is not a valid number, or "${reg}" is not a valid register`,
@@ -537,8 +534,6 @@ function checkBFormatInst(
     };
   }
   if (!labelExist(label, symbolTable)) {
-    console.log(!labelExist(label, symbolTable), label, symbolTable, line);
-
     return { error: true, message: `"${label}" not found in symbol table` };
   }
 
@@ -572,7 +567,6 @@ function checkUFormatInst(
   }
 
   if (!isValidImmediateUFormat(immediate)) {
-    console.log('U format');
     return {
       error: true,
       message: `"${immediate}" operand is out of range or is not a valid number`,
@@ -596,7 +590,6 @@ function checkJFormatInst(line: string[]) {
     return { error: true, message: `"${t1}" operand is of incorrect type` };
   }
   if (!isValidImmediateUFormat(immediate)) {
-    console.log('J format');
     return {
       error: true,
       message: `"${immediate}" operand is out of range or is not a valid number`,

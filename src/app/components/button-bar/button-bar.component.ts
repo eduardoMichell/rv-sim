@@ -17,10 +17,9 @@ import { cloneDeep } from 'lodash';
 @Component({
   selector: 'app-button-bar',
   templateUrl: './button-bar.component.html',
-  styleUrls: ['./button-bar.component.scss']
+  styleUrls: ['./button-bar.component.scss'],
 })
 export class ButtonBarComponent implements OnDestroy {
-
   private runtimeSubscription: Subscription;
   private codeSubscription: Subscription;
 
@@ -37,20 +36,25 @@ export class ButtonBarComponent implements OnDestroy {
     private codeService: CodeService,
     private runtimeService: RuntimeService,
     private buttonService: ButtonsService,
-    public dialog: MatDialog) {
+    public dialog: MatDialog
+  ) {
     this.code = this.codeService.getCode();
     this.convertedCode = this.utilsService.initAsm();
     this.previousCode = this.codeService.getLastPreviousCode() || null;
-    this.codeSubscription = combineLatest([this.codeService.convertedCode$, this.codeService.code$]).subscribe(([convertedCode, code]) => {
+    this.codeSubscription = combineLatest([
+      this.codeService.convertedCode$,
+      this.codeService.code$,
+    ]).subscribe(([convertedCode, code]) => {
       this.convertedCode = convertedCode;
-      if (code != "") {
+      if (code != '') {
         this.code = code;
       }
-    })
-    this.runtimeSubscription = this.runtimeService.currentTabIndex$.subscribe((newTabIndex) => {
-      this.currentTabIndex = newTabIndex;
-    })
-
+    });
+    this.runtimeSubscription = this.runtimeService.currentTabIndex$.subscribe(
+      (newTabIndex) => {
+        this.currentTabIndex = newTabIndex;
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -67,11 +71,16 @@ export class ButtonBarComponent implements OnDestroy {
       this.convertedCode = code;
       this.codeService.setConvertedCode(this.convertedCode);
       const { data } = this.riscvService.assembleCode(this.convertedCode);
-      this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
+      this.codeService.setConvertedCode(
+        this.utilsService.createAsmObject(data)
+      );
       this.buttonService.setCanRun(true);
       this.buttonService.setCanDump(true);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-      this.utilsService.setConsole('Assemble', 'operation completed without errors.');
+      this.utilsService.setConsole(
+        'Assemble',
+        'operation completed without errors.'
+      );
     } else {
       this.utilsService.setConsole('Error', message);
     }
@@ -80,14 +89,24 @@ export class ButtonBarComponent implements OnDestroy {
   runOneStep() {
     if (!this.canExecuteInstruction()) {
       this.codeService.setPreviousCode(this.codeService.getConvertedCode());
-      const { data } = this.riscvService.runOneStep(this.codeService.getConvertedCode())
+      const { data } = this.riscvService.runOneStep(
+        this.codeService.getConvertedCode()
+      );
 
-      this.codeService.setConvertedCode(this.utilsService.createAsmObject(data));
+      this.codeService.setConvertedCode(
+        this.utilsService.createAsmObject(data)
+      );
       this.buttonService.setCanUndoLastStep(false);
       this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-      this.buttonService.setRegRowCodeIndex(this.convertedCode.control.getLastRegIndex());
+      this.buttonService.setRegRowCodeIndex(
+        this.convertedCode.control.getLastRegIndex()
+      );
     } else {
-      this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true);
+      this.utilsService.showMessage(
+        'Warning: You are trying to execute non-existent instructions',
+        false,
+        true
+      );
     }
   }
 
@@ -97,7 +116,11 @@ export class ButtonBarComponent implements OnDestroy {
         this.runOneStep();
       }
     } else {
-      this.utilsService.showMessage("Warning: You are trying to execute non-existent instructions", false, true)
+      this.utilsService.showMessage(
+        'Warning: You are trying to execute non-existent instructions',
+        false,
+        true
+      );
     }
   }
 
@@ -105,35 +128,46 @@ export class ButtonBarComponent implements OnDestroy {
     if (!this.canUndoLastStep()) {
       const previous = this.codeService.getLastPreviousCode();
       if (previous) {
-        console.log('Restaurando estado anterior:', previous);
+        // console.log('Restaurando estado anterior:', previous);
         this.codeService.setConvertedCode(cloneDeep(previous));
-  
-        // Reaplique explicitamente todos os estados
+
         this.convertedCode.memories.pc = previous.memories.pc;
-        this.convertedCode.memories.regFile = cloneDeep(previous.memories.regFile);
-        this.convertedCode.memories.memory = cloneDeep(previous.memories.memory);
+        this.convertedCode.memories.regFile = cloneDeep(
+          previous.memories.regFile
+        );
+        this.convertedCode.memories.memory = cloneDeep(
+          previous.memories.memory
+        );
         this.convertedCode.control = cloneDeep(previous.control);
-  
-        // Atualize os índices e os botões
-        this.buttonService.setCanUndoLastStep(this.codeService.getPreviousCode().length < 1);
+
+        this.buttonService.setCanUndoLastStep(
+          this.codeService.getPreviousCode().length < 1
+        );
         this.buttonService.setRowCodeIndex(this.convertedCode.memories.pc);
-        this.buttonService.setRegRowCodeIndex(previous.control.getLastRegIndex());
-  
-        console.log('Estado restaurado. PC atual:', this.convertedCode.memories.pc);
+        this.buttonService.setRegRowCodeIndex(
+          previous.control.getLastRegIndex()
+        );
+
+        // console.log('Estado restaurado. PC atual:', this.convertedCode.memories.pc);
       }
     }
   }
 
-
   async dumpFile() {
     this.dialog.open(DumpFileDialogComponent, {
-      data: this.convertedCode
+      data: this.convertedCode,
     });
   }
 
   downloadFile() {
-    this.utilsService.downloadFile(`riscv-${Date.now()}.asm`, this.codeService.getCode())
-    this.utilsService.setConsole('System', `Downloaded file riscv-${Date.now()}.asm`);
+    this.utilsService.downloadFile(
+      `riscv-${Date.now()}.asm`,
+      this.codeService.getCode()
+    );
+    this.utilsService.setConsole(
+      'System',
+      `Downloaded file riscv-${Date.now()}.asm`
+    );
   }
 
   async onFileSelected(event: any): Promise<void> {
@@ -142,7 +176,6 @@ export class ButtonBarComponent implements OnDestroy {
       this.setConvertedCode(code);
       this.codeService.setCode(code);
     }
-
   }
 
   setCode() {
@@ -153,13 +186,16 @@ export class ButtonBarComponent implements OnDestroy {
   }
 
   help() {
-    this.dialog.open(HelpDialogComponent, {
-    });
+    this.dialog.open(HelpDialogComponent, {});
   }
 
   canUndoLastStep() {
     const convertedCode = this.codeService.getConvertedCode();
-    return convertedCode?.memories.pc === ConstantsInit.PC || this.buttonService.getCanUndoLastStep() || this.codeService.getPreviousCode().length === 0;
+    return (
+      convertedCode?.memories.pc === ConstantsInit.PC ||
+      this.buttonService.getCanUndoLastStep() ||
+      this.codeService.getPreviousCode().length === 0
+    );
   }
 
   resetAll() {
@@ -184,7 +220,10 @@ export class ButtonBarComponent implements OnDestroy {
 
   isEnd() {
     const convertedCode = this.codeService.getConvertedCode();
-    return convertedCode?.memories.pc === ConstantsInit.PC + (convertedCode.code.text.source.length * 4);
+    return (
+      convertedCode?.memories.pc ===
+      ConstantsInit.PC + convertedCode.code.text.source.length * 4
+    );
   }
 
   getCanRun() {
@@ -195,4 +234,3 @@ export class ButtonBarComponent implements OnDestroy {
     return this.buttonService.getCanDump();
   }
 }
-

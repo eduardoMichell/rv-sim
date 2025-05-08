@@ -495,27 +495,41 @@ function separateDataLinesByLabel(data: string[][]): string[][] {
   }
   return newData;
 }
-
 function convertTextBasicLabels(
   basic: Array<string[]>,
   symbolTable: Array<any>
 ): Array<string[]> {
   const transformedInstructions = basic.map((instr) => [...instr]);
+
+  const multiInstructionPseudos = ['la']; //TODO: refatorar
+
+  const getInstructionWeight = (instr: string[]) =>
+    multiInstructionPseudos.includes(instr[0]) ? 2 : 1;
+
+  const instructionPCMap: number[] = [];
+  let currentPC = 0;
+  for (let i = 0; i < basic.length; i++) {
+    instructionPCMap[i] = currentPC;
+    currentPC += getInstructionWeight(basic[i]) * 4;
+  }
+
   if (symbolTable) {
-    symbolTable.forEach((labelObj) => {
-      const labelName = labelObj.label;
-      const labelPos = labelObj.labelPosition;
+    symbolTable.forEach(({ label, labelPosition }) => {
+      const labelPC = labelPosition * 4;
+
       transformedInstructions.forEach((instr, idx) => {
+        const instrPC = instructionPCMap[idx];
         for (let i = 1; i <= 3; i++) {
-          if (instr[i] === labelName) {
-            const instrIndex = labelPos - idx;
-            instr[i] = (instrIndex * 4).toString();
+          if (instr[i] === label) {
+            const offset = labelPC - instrPC;
+            instr[i] = offset.toString();
             break;
           }
         }
       });
     });
   }
+
   return transformedInstructions;
 }
 
