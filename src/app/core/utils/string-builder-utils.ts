@@ -35,7 +35,8 @@ export function createText(code: string, data: Array<Data>): Text {
   const { newSource, symbolTable } = createSymbolTable(source);
   const basic: Array<string[]> = convertTextBasicLabels(
     createTextBasic(newSource),
-    symbolTable
+    symbolTable,
+    newSource
   );
 
   const text = processPseudoInstructions(newSource, basic, data);
@@ -501,22 +502,24 @@ function convertTextBasicLabels(
 ): Array<string[]> {
   const transformedInstructions = basic.map((instr) => [...instr]);
 
-  const multiInstructionPseudos = ['la']; //TODO: refatorar
-
-  const getInstructionWeight = (instr: string[]) =>
-    multiInstructionPseudos.includes(instr[0]) ? 2 : 1;
+  const pseudoCountMap: Record<string, number> = {
+    la: 2,
+  };
 
   const instructionPCMap: number[] = [];
   let currentPC = 0;
+
   for (let i = 0; i < basic.length; i++) {
     instructionPCMap[i] = currentPC;
-    currentPC += getInstructionWeight(basic[i]) * 4;
+
+    const opcode = basic[i][0];
+    const count = pseudoCountMap[opcode] ?? 1;
+    currentPC += count * 4;
   }
 
   if (symbolTable) {
     symbolTable.forEach(({ label, labelPosition }) => {
-      const labelPC = labelPosition * 4;
-
+      const labelPC = instructionPCMap[labelPosition];
       transformedInstructions.forEach((instr, idx) => {
         const instrPC = instructionPCMap[idx];
         for (let i = 1; i <= 3; i++) {
